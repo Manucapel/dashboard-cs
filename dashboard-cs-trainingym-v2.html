@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard CS | Trainingym</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --naranja: #ED6845;
+  --azul: #293138;
+  --negro: #1D1D1B;
+  --gris: #F2F3F7;
+  --azul-light: #364049;
+  --azul-mid: #2e3740;
+  --text-muted: #8a9bb0;
+  --text-light: #c8d4e0;
+  --green: #3ecf8e;
+  --yellow: #f5c842;
+  --red: #f05252;
+  --card-bg: #232c35;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Host Grotesk', 'Segoe UI', sans-serif; background: var(--negro); color: var(--text-light); display: flex; min-height: 100vh; font-size: 14px; }
+
+/* SIDEBAR */
+.sidebar { width: 240px; min-height: 100vh; background: var(--azul); display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid #1a2229; }
+.sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid #1a2229; }
+.brand { font-size: 20px; font-weight: 800; color: var(--naranja); letter-spacing: -0.5px; line-height: 1; }
+.brand-sub { font-size: 10px; color: var(--text-muted); font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+.sidebar-period { background: rgba(237,104,69,0.12); border: 1px solid rgba(237,104,69,0.25); border-radius: 6px; padding: 6px 10px; margin: 12px 16px 0; font-size: 11px; color: var(--naranja); font-weight: 600; text-align: center; }
+.nav-section { font-size: 9px; font-weight: 700; color: #4a5a6a; letter-spacing: 2px; text-transform: uppercase; padding: 16px 20px 6px; }
+.nav-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 20px; font-size: 12.5px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-left: 3px solid transparent; transition: all .18s; user-select: none; }
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-light); border-left-color: rgba(237,104,69,0.4); }
+.nav-item.active { background: rgba(237,104,69,0.1); color: #fff; border-left-color: var(--naranja); font-weight: 600; }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot-ok { background: var(--green); }
+.dot-warn { background: var(--yellow); }
+.dot-bad { background: var(--red); }
+.nav-divider { height: 1px; background: #1a2229; margin: 8px 0; }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* TOP BAR */
+.topbar { background: var(--azul); border-bottom: 1px solid #1a2229; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; }
+.topbar-level { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.topbar-kpi { font-size: 19px; font-weight: 700; color: #fff; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-date { font-size: 12px; color: var(--text-muted); }
+.topbar-badge { background: var(--naranja); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; padding: 24px 32px 32px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* KPI HEADER ROW */
+.kpi-header { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+.kpi-card { background: var(--card-bg); border-radius: 10px; padding: 14px 16px; border: 1px solid #1e2a34; position: relative; overflow: hidden; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--naranja); border-radius: 10px 10px 0 0; }
+.kpi-card.current::before { background: var(--naranja); box-shadow: 0 0 12px rgba(237,104,69,0.5); }
+.kpi-card:not(.current)::before { background: #3a4a58; }
+.kpi-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.kpi-val { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
+.kpi-card.current .kpi-val { color: var(--naranja); }
+.kpi-diff { font-size: 10px; font-weight: 600; margin-top: 5px; display: flex; align-items: center; gap: 3px; }
+.diff-up { color: var(--green); }
+.diff-down { color: var(--red); }
+.diff-neutral { color: var(--text-muted); }
+
+/* MAIN GRID */
+.main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-bottom: 16px; }
+.chart-card { background: var(--card-bg); border-radius: 10px; padding: 20px; border: 1px solid #1e2a34; }
+.card-title { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.card-title::before { content: ''; width: 3px; height: 12px; background: var(--naranja); border-radius: 2px; }
+.chart-wrap { position: relative; height: 200px; }
+
+/* CIRCLES PANEL */
+.circles-card { background: var(--card-bg); border-radius: 10px; padding: 20px; border: 1px solid #1e2a34; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.circles-row-panel { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
+.circle-wrap { text-align: center; flex: 1; }
+.circle-svg-wrap { position: relative; width: 88px; height: 88px; margin: 0 auto 6px; }
+.circle-svg-wrap svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+.circle-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+.circle-inner .ci-label { font-size: 8px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.circle-inner .ci-val { font-size: 18px; font-weight: 800; line-height: 1.1; }
+.ci-val.c-naranja { color: var(--naranja); }
+.ci-val.c-green { color: var(--green); }
+.ci-val.c-yellow { color: var(--yellow); }
+.circle-name { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.circle-connector { width: 20px; height: 2px; background: #3a4a58; flex-shrink: 0; border-radius: 1px; }
+
+/* BOTTOM GRID */
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* METRICS TABLE */
+.metrics-card { background: var(--card-bg); border-radius: 10px; padding: 20px; border: 1px solid #1e2a34; }
+.metric-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #1e2a34; }
+.metric-row:last-child { border-bottom: none; }
+.metric-name { font-size: 12px; color: var(--text-light); width: 120px; flex-shrink: 0; }
+.metric-bar-wrap { flex: 1; height: 6px; background: #1a2229; border-radius: 3px; overflow: hidden; }
+.metric-bar { height: 100%; border-radius: 3px; transition: width .6s; }
+.metric-pct { font-size: 12px; font-weight: 700; color: #fff; width: 44px; text-align: right; flex-shrink: 0; }
+.metric-status { width: 60px; flex-shrink: 0; }
+.status-pill { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+.s-ok { background: rgba(62,207,142,0.15); color: var(--green); }
+.s-warn { background: rgba(245,200,66,0.15); color: var(--yellow); }
+.s-bad { background: rgba(240,82,82,0.15); color: var(--red); }
+
+/* TIPS */
+.tips-card { background: var(--card-bg); border-radius: 10px; padding: 20px; border: 1px solid #1e2a34; }
+.tip-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+.tip-item:last-child { margin-bottom: 0; }
+.tip-num { width: 22px; height: 22px; border-radius: 50%; background: var(--naranja); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.tip-body { font-size: 12.5px; color: var(--text-light); line-height: 1.55; }
+.tip-body strong { color: #fff; font-weight: 700; }
+
+/* STATUS BAR */
+.status-bar { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
+.sb-label { font-size: 10px; color: var(--text-muted); }
+.sb-track { flex: 1; height: 6px; background: #1a2229; border-radius: 3px; overflow: hidden; }
+.sb-fill { height: 100%; border-radius: 3px; }
+
+/* vs PREV MONTH INDICATOR */
+.vs-prev { display: flex; align-items: center; gap: 8px; background: #1a2229; border-radius: 8px; padding: 8px 12px; margin-bottom: 16px; }
+.vs-prev .vp-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.vs-prev .vp-val { font-size: 13px; font-weight: 800; }
+.vs-prev .vp-arrow { font-size: 14px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3a4a58; border-radius: 3px; }
+</style>
+<style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style><style>.chart-wrap { height: 200px !important; min-height: 200px !important; position: relative !important; display: block !important; } .chart-wrap canvas { position: absolute !important; top: 0; left: 0; width: 100% !important; height: 100% !important; }</style><style id="font-size-boost">
+/* ── SIDEBAR ── */
+.brand { font-size: 22px !important; }
+.brand-sub { font-size: 11px !important; letter-spacing: 1.2px !important; }
+.sidebar-period { font-size: 12px !important; }
+.nav-section { font-size: 10px !important; }
+.nav-item { font-size: 13.5px !important; padding: 10px 20px !important; }
+
+/* ── TOPBAR ── */
+.topbar-level { font-size: 11px !important; }
+.topbar-kpi { font-size: 21px !important; }
+.topbar-date { font-size: 13px !important; }
+.topbar-badge { font-size: 12px !important; padding: 5px 14px !important; }
+
+/* ── KPI HEADER CARDS (5 tarjetas superiores) ── */
+.kpi-label { font-size: 10.5px !important; }
+.kpi-val { font-size: 26px !important; }
+.kpi-diff { font-size: 11.5px !important; }
+
+/* ── CARD TITLE (section headers) ── */
+.card-title { font-size: 11px !important; letter-spacing: 1.2px !important; margin-bottom: 14px !important; }
+
+/* ── CIRCLES PANEL ── */
+.circle-inner .ci-label { font-size: 9px !important; }
+.circle-inner .ci-val { font-size: 20px !important; }
+.circle-ring.center-ring .ci-val { font-size: 22px !important; }
+.circle-name { font-size: 11px !important; }
+
+/* ── STATUS BARS bajo los círculos ── */
+.sb-label { font-size: 11.5px !important; }
+.sb-track { height: 7px !important; }
+.status-bar span[style*="font-size:11px"] { font-size: 12px !important; }
+
+/* ── METRICS TABLE (barras de progreso) ── */
+.metric-name { font-size: 13px !important; }
+.metric-pct { font-size: 13px !important; }
+.metric-bar-wrap { height: 7px !important; }
+.metric-row { padding: 10px 0 !important; }
+
+/* ── STATUS PILLS ── */
+.status-pill { font-size: 10px !important; padding: 3px 9px !important; }
+
+/* ── TIPS / RECOMENDACIONES ── */
+.tip-num { font-size: 12px !important; width: 24px !important; height: 24px !important; }
+.tip-body { font-size: 13.5px !important; line-height: 1.6 !important; }
+.tip-body strong { font-size: 13.5px !important; }
+
+/* ── CÍRCULOS status bars inline ── */
+.circles-card .sb-label { font-size: 11.5px !important; }
+
+/* ── TOPBAR general ── */
+.topbar { height: 64px !important; }
+</style><style id="light-bg-override">
+/* ── FONDO PRINCIPAL ── */
+body { background: #F2F3F7 !important; }
+.content { background: #F2F3F7 !important; }
+.main { background: #F2F3F7 !important; }
+
+/* ── CARDS: fondo blanco sobre gris claro ── */
+.kpi-card,
+.chart-card,
+.circles-card,
+.metrics-card,
+.tips-card { 
+  background: #ffffff !important; 
+  border: 1px solid #e2e4ea !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+}
+
+/* ── KPI CARDS: barra superior ── */
+.kpi-card::before { background: #e2e4ea !important; }
+.kpi-card.current::before { background: var(--naranja) !important; box-shadow: 0 0 10px rgba(237,104,69,0.3) !important; }
+
+/* ── KPI CARD TEXTOS ── */
+.kpi-label { color: #6b7280 !important; }
+.kpi-val { color: #1D1D1B !important; }
+.kpi-card.current .kpi-val { color: var(--naranja) !important; }
+
+/* ── CARD TITLE ── */
+.card-title { color: #6b7280 !important; }
+
+/* ── TOPBAR ── */
+.topbar { background: #ffffff !important; border-bottom: 1px solid #e2e4ea !important; }
+.topbar-level { color: #6b7280 !important; }
+.topbar-kpi { color: #1D1D1B !important; }
+.topbar-date { color: #6b7280 !important; }
+
+/* ── METRIC ROWS ── */
+.metric-row { border-bottom: 1px solid #eef0f4 !important; }
+.metric-name { color: #374151 !important; }
+.metric-pct { color: #1D1D1B !important; }
+.metric-bar-wrap { background: #e8eaf0 !important; }
+
+/* ── STATUS BARS ── */
+.sb-label { color: #6b7280 !important; }
+.sb-track { background: #e8eaf0 !important; }
+
+/* ── TIP BODY ── */
+.tip-body { color: #374151 !important; }
+.tip-body strong { color: #1D1D1B !important; }
+
+/* ── CIRCLE NAMES ── */
+.circle-name { color: #6b7280 !important; }
+.circle-inner .ci-label { color: #6b7280 !important; }
+
+/* ── NAV DIVIDER ── */
+.nav-divider { background: #1e2a34 !important; }
+
+/* ── CHART grids ── */
+</style><style id="topbar-color-fix">
+.topbar {
+  background: #293138 !important;
+  border-bottom: 1px solid #1a2229 !important;
+}
+.topbar-level { color: #8a9bb0 !important; }
+.topbar-kpi   { color: #ffffff !important; }
+.topbar-date  { color: #8a9bb0 !important; }
+</style><style id="circles-resize">
+/* ── Contenedor principal del panel de círculos ── */
+.circles-card {
+  padding: 16px 12px !important;
+  gap: 6px !important;
+}
+
+/* ── Fila de círculos: más aire entre elementos ── */
+.circles-row-panel {
+  gap: 6px !important;
+  width: 100% !important;
+  padding: 4px 2px !important;
+}
+
+/* ── Círculos SVG: reducir de 88px a 76px ── */
+.circle-svg-wrap {
+  width: 76px !important;
+  height: 76px !important;
+}
+.circle-svg-wrap svg {
+  width: 76px !important;
+  height: 76px !important;
+}
+
+/* ── Valores dentro del círculo ── */
+.circle-inner .ci-label {
+  font-size: 8px !important;
+  letter-spacing: 0.8px !important;
+}
+.circle-inner .ci-val {
+  font-size: 16px !important;
+  line-height: 1.1 !important;
+}
+
+/* ── Nombre bajo el círculo ── */
+.circle-name {
+  font-size: 10px !important;
+  margin-top: 4px !important;
+}
+
+/* ── Conector — ── */
+.circle-connector {
+  width: 14px !important;
+  margin-top: -16px !important;
+}
+
+/* ── Barras de estado bajo los círculos ── */
+.status-bar {
+  margin-top: 8px !important;
+  gap: 6px !important;
+}
+.sb-label {
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  flex-shrink: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 130px !important;
+}
+.sb-track {
+  flex: 1 !important;
+  min-width: 30px !important;
+}
+</style><style id="mayo-color-override">
+  .kpi-card.current[data-mayo-color="orange"] .kpi-val { color: #ED6845 !important; }
+  .kpi-card.current[data-mayo-color="green"]  .kpi-val { color: #4caf50 !important; }
+  .kpi-card.current[data-mayo-color="red"]    .kpi-val { color: #ef4444 !important; }
+</style><style id="tips-semaphore-style">
+/* ── Remove old tips-semaphore if already exists ── */
+
+/* ── Semaphore Tips Card ── */
+.tips-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 24px 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.tips-card .card-title {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #293138;
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 3px solid #ED6845;
+}
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.tip-alert-card {
+  border-radius: 10px;
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fafafa;
+  border-left: 4px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.tip-alert-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Color variants */
+.tip-alert-card.tip-red {
+  border-left-color: #ef4444;
+  background: #fff8f8;
+}
+.tip-alert-card.tip-orange {
+  border-left-color: #ED6845;
+  background: #fff9f6;
+}
+.tip-alert-card.tip-green {
+  border-left-color: #22c55e;
+  background: #f6fff9;
+}
+.tip-alert-card.tip-blue {
+  border-left-color: #3b82f6;
+  background: #f6f9ff;
+}
+
+/* Badge */
+.tip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 9.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 20px;
+  width: fit-content;
+}
+.tip-red .tip-badge { background: #fde8e8; color: #ef4444; }
+.tip-orange .tip-badge { background: #fde8e0; color: #ED6845; }
+.tip-green .tip-badge { background: #dcfce7; color: #16a34a; }
+.tip-blue .tip-badge { background: #dbeafe; color: #2563eb; }
+
+/* Icon in badge */
+.tip-badge-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Title */
+.tip-alert-title {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #1D1D1B;
+  line-height: 1.3;
+}
+.tip-red .tip-alert-title { color: #c41e1e; }
+.tip-orange .tip-alert-title { color: #b84a2c; }
+.tip-green .tip-alert-title { color: #166534; }
+.tip-blue .tip-alert-title { color: #1e40af; }
+
+/* Body */
+.tip-alert-body {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 400;
+  font-size: 12.5px;
+  color: #444;
+  line-height: 1.5;
+}
+</style><style id="tips-collapsible-style">
+/* ── Collapsible Tips Card ── */
+.tips-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Header row — always visible, clickable */
+.tips-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+.tips-header:hover {
+  background: #f7f7f7;
+}
+.tips-card.tips-open .tips-header {
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* Left side of header */
+.tips-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tips-header-accent {
+  width: 3px;
+  height: 16px;
+  background: #ED6845;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.tips-header-title {
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #293138;
+}
+
+/* Badges summary (shown when collapsed) */
+.tips-summary-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  transition: opacity 0.2s;
+}
+.tips-card.tips-open .tips-summary-badges {
+  opacity: 0;
+  pointer-events: none;
+}
+.tips-summary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Host Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.tips-summary-badge.s-red   { background: #fde8e8; color: #ef4444; }
+.tips-summary-badge.s-orange { background: #fde8e0; color: #ED6845; }
+.tips-summary-badge.s-green  { background: #dcfce7; color: #16a34a; }
+.tips-summary-badge.s-blue   { background: #dbeafe; color: #2563eb; }
+
+/* Chevron icon */
+.tips-chevron {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #293138;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.tips-card.tips-open .tips-chevron {
+  transform: rotate(180deg);
+}
+.tips-chevron svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Collapsible body */
+.tips-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  padding: 0 20px;
+}
+.tips-card.tips-open .tips-body {
+  max-height: 600px;
+  padding: 20px;
+}
+
+/* Tips grid inside body */
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+</style><style id="topbar-desc-style">
+  /* Topbar sizing */
+  .topbar {
+    min-height: 56px !important;
+    height: auto !important;
+    padding: 0 24px !important;
+    align-items: stretch !important;
+  }
+  .topbar-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding: 10px 0;
+  }
+  .topbar-right {
+    margin-top: 0;
+    align-self: center;
+  }
+
+  /* KPI name row + toggle trigger */
+  .topbar-kpi-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* The toggle button next to the KPI name */
+  #topbar-desc-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 12px;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 8px 2px 6px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    transition: background 0.2s;
+    vertical-align: middle;
+    position: relative;
+    top: 1px;
+  }
+  #topbar-desc-toggle:hover {
+    background: rgba(255,255,255,0.18);
+  }
+  #topbar-desc-toggle-label {
+    font-family: 'Host Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+  }
+  #topbar-desc-chevron {
+    width: 12px;
+    height: 12px;
+    color: rgba(255,255,255,0.55);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+  #topbar-desc-chevron svg {
+    width: 10px;
+    height: 10px;
+  }
+  .topbar-desc-open #topbar-desc-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Collapsible description body */
+  #topbar-desc {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin 0.3s ease;
+    opacity: 0;
+    margin-top: 0;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.60);
+    font-weight: 400;
+    max-width: 900px;
+    line-height: 1.5;
+    font-family: 'Host Grotesk', sans-serif;
+  }
+  .topbar-desc-open #topbar-desc {
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 5px;
+  }
+  #topbar-desc strong {
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+  }
+</style><style id="tips-info-badge-style">
+  /* INFO badge inside tips-card header — matches topbar style */
+  .tips-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 10px;
+    padding: 2px 8px 2px 7px;
+    border-radius: 20px;
+    background: #293138;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .tips-info-badge:hover {
+    background: #3a4550;
+  }
+  .tips-info-badge-label {
+    font-family: 'Host Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+  }
+  .tips-info-badge-chevron {
+    display: flex;
+    align-items: center;
+    color: rgba(255,255,255,0.55);
+    transition: transform 0.3s ease;
+  }
+  .tips-info-badge-chevron svg {
+    width: 10px;
+    height: 10px;
+  }
+  /* When open: rotate the chevron inside the badge too */
+  .tips-card.tips-open .tips-info-badge-chevron {
+    transform: rotate(180deg);
+  }
+  /* When open: hide the summary badges (they were already hidden via opacity) */
+</style></head>
+<body>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand">trainingym</div>
+    <div class="brand-sub">Customer Success</div>
+  </div>
+  <div class="sidebar-period">01/05/2026 — 31/05/2026</div>
+  <nav>
+    <div class="nav-section">Nivel I — Estratégicos</div>
+    <div class="nav-item" onclick="showPage('conversaciones',this,'Nivel I','Total Conversaciones')" style="display: none;">Total Conversaciones <span class="nav-dot dot-ok"></span></div>
+    <div class="nav-item" onclick="showPage('coste',this,'Nivel I','Coste por Ticket')">Coste por Ticket <span class="nav-dot dot-bad"></span></div>
+    <div class="nav-item" onclick="showPage('resolucion',this,'Nivel I','Tasa de Resolución')">Conversaciones y Resolución</div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">Nivel II — Operativo</div>
+    <div class="nav-item" onclick="showPage('satisfaccion',this,'Nivel II','Satisfacción CSAT')">Satisfacción CSAT <span class="nav-dot dot-warn"></span></div>
+    <div class="nav-item" onclick="showPage('calidad',this,'Nivel II','Calidad')">Calidad <span class="nav-dot dot-ok"></span></div>
+    <div class="nav-item" onclick="showPage('vel1',this,'Nivel II','Tiempo 1ª Respuesta')">Tiempo 1ª Respuesta <span class="nav-dot dot-ok"></span></div>
+    <div class="nav-item" onclick="showPage('vel2',this,'Nivel II','Tiempo entre Respuestas')">Tiempo entre Respuestas <span class="nav-dot dot-ok"></span></div>
+    <div class="nav-item" onclick="showPage('duracion',this,'Nivel II','Duración Total')">Duración Total <span class="nav-dot dot-bad"></span></div>
+    <div class="nav-item" onclick="showPage('sentimiento',this,'Nivel II','Sentimiento')">Sentimiento <span class="nav-dot dot-bad"></span></div>
+    <div class="nav-item" onclick="showPage('frustracion',this,'Nivel II','Frustración')">Frustración <span class="nav-dot dot-ok"></span></div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">Rendimiento IA</div>
+    <div class="nav-item" onclick="showPage('retencion',this,'IA','Retención IA')">Retención IA <span class="nav-dot dot-warn"></span></div>
+    <div class="nav-item" onclick="showPage('defleccion',this,'IA','Deflección IA')">Deflección IA <span class="nav-dot dot-warn"></span></div>
+    <div class="nav-item" onclick="showPage('abandono',this,'IA','Abandono IA')">Abandono IA <span class="nav-dot dot-ok"></span></div>
+  </nav>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-level" id="hdr-level">INDICADORES COMITÉ EJECUTIVO — IA</div>
+      <div class="topbar-kpi-row"><div class="topbar-kpi" id="hdr-kpi">Retención IA</div><span id="topbar-desc-toggle"><span id="topbar-desc-label" style="font-family:'Host Grotesk',sans-serif;font-weight:600;font-size:9.5px;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.65);">Info</span><span id="topbar-desc-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span></div>
+    <div id="topbar-desc" style="font-size: 11px; color: rgb(138, 155, 176); font-weight: 400; max-width: 700px; line-height: 1.4; margin-top: 3px; font-family: &quot;Host Grotesk&quot;, sans-serif;"><strong style="color:#ED6845;">Retención IA:</strong> % de conversaciones iniciadas con la IA que se resuelven sin intervención humana. <span style="color:#b0b8c5;">Impacto:</span> Principal palanca de reducción de coste; cada 10pp de mejora supone ~200 tickets menos gestionados por agente al mes.</div></div>
+    <div class="topbar-right">
+      <div class="topbar-date">Actualizado: 04/06/2026 • 00:45</div>
+      <div class="topbar-badge">Mayo 2026</div>
+    </div>
+  </div>
+  <div class="content">
+<!-- === PAGE: CONVERSACIONES === -->
+<div class="page" id="page-conversaciones">
+  <div class="kpi-header">
+    <div class="kpi-card"><div class="kpi-label">Promedio 2026</div><div class="kpi-val">2.104</div><div class="kpi-diff diff-neutral">Referencia año</div></div>
+    <div class="kpi-card"><div class="kpi-label">Febrero</div><div class="kpi-val">2.210</div><div class="kpi-diff diff-neutral">—</div></div>
+    <div class="kpi-card"><div class="kpi-label">Marzo</div><div class="kpi-val">2.180</div><div class="kpi-diff diff-down">▼ −1,4%</div></div>
+    <div class="kpi-card"><div class="kpi-label">Abril</div><div class="kpi-val">2.091</div><div class="kpi-diff diff-down">▼ −4,1%</div></div>
+    <div class="kpi-card current" data-mayo-color="orange"><div class="kpi-label">Mayo (Actual)</div><div class="kpi-val" style="color: rgb(237, 104, 69);">1.987</div><div class="kpi-diff diff-down">▼ −4,9%</div></div>
+  </div>
+  <div class="main-grid">
+    <div class="chart-card">
+      <div class="card-title">Evolución mensual — feb a may 2026 vs. Promedio año</div>
+      <div class="chart-wrap" style="height: 200px; min-height: 200px;"><canvas id="ch-conversaciones" width="1218" height="200" style="width: 1218px; height: 200px; display: block; box-sizing: border-box;"></canvas></div>
+    </div>
+    <div class="circles-card">
+      <div class="card-title">Comparativa Mayo 2026</div>
+      <div class="circles-row-panel">
+        <div class="circle-wrap">
+          <div class="circle-svg-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="36" fill="none" stroke="#1a2229" stroke-width="7"></circle><circle cx="44" cy="44" r="36" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="75" stroke-linecap="round"></circle></svg>
+            <div class="circle-inner"><div class="ci-label">OBJ.</div><div class="ci-val" style="color: rgb(29, 29, 27); font-size: 16px; font-weight: 700;">2.000</div></div>
+          </div>
+          <div class="circle-name">Objetivo</div>
+        </div>
+        <div class="circle-connector"></div>
+        <div class="circle-wrap">
+          <div class="circle-svg-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="36" fill="none" stroke="#1a2229" stroke-width="7" stroke-dasharray="6 4"></circle><circle cx="44" cy="44" r="36" fill="none" stroke="rgb(237, 104, 69)" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="38" stroke-linecap="round"></circle></svg>
+            <div class="circle-inner"><div class="ci-label">REAL</div><div class="ci-val" style="font-size: 15px; color: rgb(237, 104, 69);">1.987</div></div>
+          </div>
+          <div class="circle-name">Mayo 2026</div>
+        </div>
+        <div class="circle-connector"></div>
+        <div class="circle-wrap">
+          <div class="circle-svg-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="44" r="36" fill="none" stroke="#1a2229" stroke-width="7"></circle><circle cx="44" cy="44" r="36" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="188.5" stroke-dashoffset="94" stroke-linecap="round"></circle></svg>
+            <div class="circle-inner"><div class="ci-label">SECTOR</div><div class="ci-val" style="font-size: 16px; color: rgb(29, 29, 27); font-weight: 700;">1.800</div></div>
+          </div>
+          <div class="circle-name">Prom. Sector</div>
+        </div>
+      </div>
+      <div class="status-bar"><span class="sb-label">vs Objetivo</span><div class="sb-track"><div class="sb-fill" style="width:99.35%;background:var(--naranja)"></div></div><span style="font-size:11px;color:var(--naranja);font-weight:700">99,4%</span></div>
+      <div class="status-bar"><span class="sb-label">vs Sector</span><div class="sb-track"><div class="sb-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green);font-weight:700">+10,4%</span></div>
+    </div>
+  </div>
+  <div class="bottom-grid">
+    <div class="metrics-card">
+      <div class="card-title">Distribución por canal — Mayo 2026</div>
+      <div class="metric-row"><span class="metric-name">Chat</span><div class="metric-bar-wrap"><div class="metric-bar" style="width:74.5%;background:var(--naranja)"></div></div><span class="metric-pct">74,5%</span><div class="metric-status"><span class="status-pill s-ok">Lider</span></div></div>
+      <div class="metric-row"><span class="metric-name">Email</span><div class="metric-bar-wrap"><div class="metric-bar" style="width:14.4%;background:#5b7fa6"></div></div><span class="metric-pct">14,4%</span><div class="metric-status"><span class="status-pill s-warn">Medio</span></div></div>
+      <div class="metric-row"><span class="metric-name">WhatsApp</span><div class="metric-bar-wrap"><div class="metric-bar" style="width:11%;background:#3ecf8e"></div></div><span class="metric-pct">11,0%</span><div class="metric-status"><span class="status-pill s-warn">Bajo</span></div></div>
+    </div>
+    <div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-orange">📉 Atención</span><span class="tips-summary-badge s-blue">💬 Info</span><span class="tips-summary-badge s-orange">📲 Oportunidad</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>ATENCIÓN</span>
+    <div class="tip-alert-title">Tendencia descendente</div>
+    <div class="tip-alert-body">El volumen cae un 10,1% desde febrero. Verificar si es estacionalidad o mejora en autoservicio.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">💬</span>INFORMACIÓN</span>
+    <div class="tip-alert-title">Chat dominante (74,5%)</div>
+    <div class="tip-alert-body">Reforzar flujos IA en este canal para gestionar el volumen sin añadir agentes.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">📲</span>OPORTUNIDAD</span>
+    <div class="tip-alert-title">WhatsApp infrarrepresentado</div>
+    <div class="tip-alert-body">El sector SaaS/Fitness ve crecimientos del 25-30% en mensajería. Activar campañas de adopción.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- === PAGE: COSTE === -->
+<div class="page" id="page-coste"><div id="coste-top-unified" style="display: grid; grid-template-columns: 60px 1fr 2fr; gap: 12px; margin-bottom: 16px; align-items: stretch;">
+  <!-- ══ AGENTE ROW ══ -->
+  <!-- Label -->
+  <div style="background:#293138;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px 4px;grid-row:1">
+    <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#ED6845;text-transform:uppercase;letter-spacing:1px;">Agente</div>
+  </div>
+
+  <!-- Mayo Actual card -->
+  <div class="kpi-card current" data-mayo-color="orange" style="grid-row:1;display:flex;flex-direction:column;justify-content:center;padding:18px 24px;">
+    <div class="kpi-label">Mayo (Actual)</div>
+    <div class="kpi-val" style="font-size:36px;">11,14€</div>
+    <div class="kpi-diff diff-down" style="font-size:13px;">▼ +18,5% vs abr. &nbsp;|&nbsp; Obj. 8€ &nbsp;|&nbsp; Sector 7€</div>
+  </div>
+
+  <!-- Comparativa Agente -->
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 20px;grid-row:1;display:flex;flex-direction:column;gap:8px;">
+    <div class="card-title" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#ED6845;margin-bottom:4px;">▌ Comparativa Mayo 2026 — Agente</div>
+    <div style="display:flex;align-items:center;justify-content:space-around;">
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">OBJ.</div>
+          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">8€</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Objetivo</div>
+    </div>
+      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6" stroke-dasharray="4 4"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="rgb(237, 104, 69)" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="52.8" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">REAL</div>
+          <div class="ci-val" style="color:#ED6845;font-size:15px;font-weight:800">11,14€</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Mayo 2026</div>
+    </div>
+      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">SECTOR</div>
+          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">7€</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Prom. Sector</div>
+    </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#293138;padding-top:4px;border-top:1px solid #f0f0f0;">
+      <span>vs Objetivo (8€) <strong style="color:#ED6845;">+39%</strong></span>
+      <span>IA vs Agente <strong style="color:#4caf50;">0,84€</strong></span>
+    </div>
+  </div>
+
+  <!-- ══ IA ROW ══ -->
+  <!-- Label -->
+  <div style="background:#293138;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px 4px;grid-row:2;margin-top:6px;">
+    <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</div>
+  </div>
+
+  <!-- Mayo Actual IA card -->
+  <div class="kpi-card current" data-mayo-color="green" style="grid-row:2;margin-top:6px;border-color:#4caf50;display:flex;flex-direction:column;justify-content:center;padding:18px 24px;">
+    <div class="kpi-label">Mayo (Actual)</div>
+    <div class="kpi-val" style="font-size:36px;">0,84€</div>
+    <div class="kpi-diff diff-up" style="font-size:13px;">▲ −23,6% vs abr. &nbsp;|&nbsp; Obj. 1€ &nbsp;|&nbsp; Sector 1,05€</div>
+  </div>
+
+  <!-- Comparativa IA -->
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 20px;grid-row:2;margin-top:6px;display:flex;flex-direction:column;gap:8px;">
+    <div class="card-title" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#4caf50;margin-bottom:4px;">▌ Comparativa IA Mayo 2026</div>
+    <div style="display:flex;align-items:center;justify-content:space-around;">
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">OBJ.</div>
+          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">1€</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Objetivo</div>
+    </div>
+      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6" stroke-dasharray="4 4"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="rgb(76, 175, 80)" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">REAL</div>
+          <div class="ci-val" style="color:#4caf50;font-size:15px;font-weight:800">0,84€</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Mayo 2026</div>
+    </div>
+      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">SECTOR</div>
+          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">1,05€</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Prom. Sector</div>
+    </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#293138;padding-top:4px;border-top:1px solid #f0f0f0;">
+      <span>vs Objetivo IA (1€) <strong style="color:#4caf50;">−16% ✓</strong></span>
+      <span>IA vs Sector (1,05€) <strong style="color:#4caf50;">−20% ✓</strong></span>
+    </div>
+  </div>
+</div>
+  
+  <div class="main-grid" style="grid-template-columns: 1fr;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"><div class="chart-card">
+  <div class="card-title">Evolución Coste — Agente Humano</div>
+  <div class="chart-wrap" style="position:relative;height:220px;">
+    <canvas id="ch-coste-agente" style="box-sizing: border-box; display: block; height: 200px; width: 755px;" width="755" height="200"></canvas>
+  </div>
+</div><div class="chart-card">
+  <div class="card-title">Evolución Coste — IA</div>
+  <div class="chart-wrap" style="position:relative;height:220px;">
+    <canvas id="ch-coste-ia" style="box-sizing: border-box; display: block; height: 200px; width: 755px;" width="755" height="200"></canvas>
+  </div>
+</div></div>
+    
+  </div>
+  <div class="bottom-grid" style="grid-template-columns: 1fr; gap: 16px; align-items: start;">
+    
+    <div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">🚨 Alerta</span><span class="tips-summary-badge s-green">💡 Oportunidad</span><span class="tips-summary-badge s-orange">🎯 Acción</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">🚨</span>ALERTA CRÍTICA</span>
+    <div class="tip-alert-title">Incremento crítico (+142% en 3 meses)</div>
+    <div class="tip-alert-body">El coste del agente pasa de 4,6€ (feb) a 11,14€ (mayo). Revisión urgente de eficiencia operativa.</div>
+  </div><div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">💡</span>OPORTUNIDAD</span>
+    <div class="tip-alert-title">IA: palanca de ahorro clave (0,84€)</div>
+    <div class="tip-alert-body">13x más barata que el agente. Aumentar deflección al 70% puede bajar el coste combinado a &lt;4€.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🎯</span>ACCIÓN</span>
+    <div class="tip-alert-title">Plan de acción Q3</div>
+    <div class="tip-alert-body">Reducir tiempo efectivo del agente (hoy 54m) y aumentar la retención IA como prioridad máxima del trimestre.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- === PAGE: RESOLUCION === -->
+<div class="page" id="page-resolucion"><div id="resolucion-top-unified" style="display: grid; grid-template-columns: 60px 1fr 2fr; gap: 12px; margin-bottom: 16px; align-items: stretch; grid-template-rows: auto auto auto;">
+  <!-- ROW 1: TICKETS -->
+  <div style="background:#293138;border-radius:8px;padding:8px 0;display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;">TICKETS</span>
+  </div>
+  <div class="kpi-card" style="grid-column: 2 / 4;">
+    
+  <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:20px;align-items:center;">
+    
+    <!-- Left: main number -->
+    <div>
+      <div class="kpi-label" style="font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#888;margin-bottom:6px;">MAYO (ACTUAL)</div>
+      <div class="kpi-val" style="font-size:2.8rem;font-weight:800;color:#1D1D1B;line-height:1;margin-bottom:8px;" data-mayo-color="#1D1D1B">1.987</div>
+      <div class="kpi-diff diff-down" style="font-size:12px;color:#888;">▼ −4,9% vs abr. &nbsp;|&nbsp; Prom. 2026: 2.104</div>
+    </div>
+    
+    <!-- Right: canal distribution -->
+    <div style="border-left:1px solid #eee;padding-left:20px;">
+      <div style="font-family:'Host Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#293138;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+        <span style="display:inline-block;width:3px;height:12px;background:#ED6845;border-radius:2px;flex-shrink:0;"></span>
+        Distribución por Canal — Mayo 2026
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:11.5px;font-weight:600;color:#1D1D1B;min-width:68px;">💬 Chat</span>
+          <div style="flex:1;background:#eee;border-radius:4px;height:7px;overflow:hidden;">
+            <div style="width:74.5%;background:#ED6845;height:100%;border-radius:4px;"></div>
+          </div>
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:12.5px;font-weight:700;color:#ED6845;min-width:38px;text-align:right;">74,5%</span>
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#dcfce7;color:#16a34a;padding:2px 7px;border-radius:10px;white-space:nowrap;">LÍDER</span>
+        </div>
+        
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:11.5px;font-weight:600;color:#1D1D1B;min-width:68px;">📧 Email</span>
+          <div style="flex:1;background:#eee;border-radius:4px;height:7px;overflow:hidden;">
+            <div style="width:14.4%;background:#293138;height:100%;border-radius:4px;"></div>
+          </div>
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:12.5px;font-weight:700;color:#293138;min-width:38px;text-align:right;">14,4%</span>
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#fde8e0;color:#ED6845;padding:2px 7px;border-radius:10px;white-space:nowrap;">MEDIO</span>
+        </div>
+        
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:11.5px;font-weight:600;color:#1D1D1B;min-width:68px;">📱 WhatsApp</span>
+          <div style="flex:1;background:#eee;border-radius:4px;height:7px;overflow:hidden;">
+            <div style="width:11%;background:#9ca3af;height:100%;border-radius:4px;"></div>
+          </div>
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:12.5px;font-weight:700;color:#9ca3af;min-width:38px;text-align:right;">11,0%</span>
+          <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:10px;white-space:nowrap;">BAJO</span>
+        </div>
+        
+      </div>
+    </div>
+    
+  </div>
+
+  </div>
+  <!-- Spacer (hidden canal placeholder, not needed but grid needs 3rd col) -->
+  <div style="display:none;"></div>
+
+  <!-- ROW 2: RESOLUCIÓN -->
+  <div style="background:#293138;border-radius:8px;padding:8px 0;display:flex;align-items:center;justify-content:center;">
+    <span style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;">RESOLUCIÓN</span>
+  </div>
+  <!-- Middle col: Agente + IA mayo cards side by side -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <!-- Agente -->
+    <div class="kpi-card" style="border-left:3px solid #293138;">
+      <div class="kpi-label" style="font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:6px;">RESOLUCIÓN AGENTE — MAYO (ACTUAL)</div>
+      <div class="kpi-val" style="font-size:2.2rem;font-weight:800;color:#ED6845;margin:4px 0;">52,7%</div>
+      <div class="kpi-diff diff-down" style="font-size:11.5px;color:#888;">▼ −0,3pp vs abr. &nbsp;|&nbsp; Prom. 2026: 54%</div>
+    </div>
+    <!-- IA -->
+    <div class="kpi-card current" style="border-left:3px solid #ED6845;">
+      <div class="kpi-label" style="font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:6px;">RESOLUCIÓN IA — MAYO (ACTUAL)</div>
+      <div class="kpi-val" style="font-size:2.2rem;font-weight:800;color:#ED6845;margin:4px 0;" data-mayo-color="#ED6845">49,9%</div>
+      <div class="kpi-diff diff-down" style="font-size:11.5px;color:#888;">▼ −2,1pp vs abr. &nbsp;|&nbsp; Obj. 60% &nbsp;|&nbsp; Sector 80%</div>
+    </div>
+  </div>
+  <!-- Right col: IA Comparativa -->
+  <div>
+    
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#ED6845;margin-bottom:4px;">▌ Comparativa Resolución IA — Mayo 2026</div>
+    <div style="display:flex;align-items:center;justify-content:space-around;">
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">OBJ.</div>
+          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">60%</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Objetivo</div>
+    </div>
+      <div style="font-size:18px;color:#b0b8c5;">—</div>
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6" stroke-dasharray="4 4"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#ED6845" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="31.7" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">REAL</div>
+          <div class="ci-val" style="color:#ED6845;font-size:15px;font-weight:800">49,9%</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Mayo 2026</div>
+    </div>
+      <div style="font-size:18px;color:#b0b8c5;">—</div>
+      
+    <div class="circle-wrap">
+      <div class="circle-svg-wrap">
+        <svg viewBox="0 0 68 68" width="76" height="76">
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
+          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
+        </svg>
+        <div class="circle-inner">
+          <div class="ci-label" style="font-size:8px">SECTOR</div>
+          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">80%</div>
+        </div>
+      </div>
+      <div class="circle-name" style="font-size:9px">Prom. Sector</div>
+    </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#293138;padding-top:4px;border-top:1px solid #f0f0f0;">
+      <span>vs Objetivo (60%) <strong style="color:#ED6845;">83,2%</strong></span>
+      <span>vs Sector (80%) <strong style="color:#ef4444;">−30pp</strong></span>
+    </div>
+  
+  </div>
+</div>
+  
+  <div class="main-grid" style="grid-template-columns: 1fr;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"><div class="chart-card">
+  <div class="card-title">Evolución Total Conversaciones — Feb a May 2026</div>
+  <div class="chart-wrap" style="position:relative;height:220px;">
+    <canvas id="ch-resolucion-conv" style="display: block; box-sizing: border-box; height: 200px; width: 758px;" width="758" height="200"></canvas>
+  </div>
+</div><div class="chart-card">
+  <div class="card-title">Evolución Tasa Resolución — IA vs Agente</div>
+  <div class="chart-wrap" style="position:relative;height:220px;">
+    <canvas id="ch-resolucion-tasa" style="display: block; box-sizing: border-box; height: 200px; width: 758px;" width="758" height="200"></canvas>
+  </div>
+</div></div>
+    
+  </div>
+  <div class="bottom-grid" style="grid-template-columns: 1fr;">
+    
+    <div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">📉 Alerta</span><span class="tips-summary-badge s-orange">🏁 Oportunidad</span><span class="tips-summary-badge s-blue">💬 Info</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>ALERTA</span>
+    <div class="tip-alert-title">Resolución IA en caída (−6pp en 4 meses)</div>
+    <div class="tip-alert-body">La tasa baja de 56% a 49,9% mientras el volumen cae un 10,1%. Revisar si la reducción de tickets esconde una fuga de consultas sin resolver.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🏁</span>OPORTUNIDAD</span>
+    <div class="tip-alert-title">Brecha vs. sector de 30pp</div>
+    <div class="tip-alert-body">IA resuelve la mitad de lo que el sector espera (80%). Identificar las 10 tipologías de tickets no resueltos y añadirlos a la base de conocimiento es el quick win más rápido.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">💬</span>INFORMACIÓN</span>
+    <div class="tip-alert-title">Canal Chat domina con el 74,5%</div>
+    <div class="tip-alert-body">Reforzar los flujos IA en chat puede tener el mayor impacto en tasa de resolución. Cada punto porcentual ganado en resolución chat reduce el volumen de escalados en ~22 tickets/mes.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- === PAGE: SATISFACCION === -->
+<div class="page" id="page-satisfaccion">
+  <!-- UNIFIED TOP SECTION: 3 cols: 60px label | 1fr mayo card | 2fr comparativa -->
+  <div id="satisfaccion-top-unified" style="
+    display: grid;
+    grid-template-columns: 60px 1fr 2fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  ">
+    <!-- Label pill -->
+    <div style="background:#293138;border-radius:8px;padding:8px 0;display:flex;align-items:center;justify-content:center;">
+      <span style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fff;">AGENTE</span>
+    </div>
+
+    <!-- Mayo card with CSAT por canal integrated -->
+    <div class="kpi-card current" data-mayo-color="#ED6845">
+      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:20px;align-items:center;">
+        <!-- Left: big number -->
+        <div>
+          <div class="kpi-label" style="font-family:'Host Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#888;margin-bottom:6px;">MAYO (ACTUAL)</div>
+          <div class="kpi-val" style="font-size:2.8rem;font-weight:800;color:#ED6845;line-height:1;margin-bottom:8px;" data-mayo-color="#ED6845">93,1%</div>
+          <div class="kpi-diff diff-down" style="font-size:12px;color:#888;">▼ −0,9pp vs abr. &nbsp;|&nbsp; Obj. 95% &nbsp;|&nbsp; Sector 85%</div>
+        </div>
+        <!-- Right: CSAT por canal -->
+        <div style="border-left:1px solid #eee;padding-left:20px;">
+          <div style="font-family:'Host Grotesk',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#293138;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:3px;height:12px;background:#ED6845;border-radius:2px;flex-shrink:0;"></span>
+            CSAT por Canal — Mayo 2026
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:11px;font-weight:600;color:#1D1D1B;min-width:110px;">Agente (Promotores)</span>
+              <div style="flex:1;background:#eee;border-radius:4px;height:6px;overflow:hidden;"><div style="width:93.1%;background:#4caf50;height:100%;border-radius:4px;"></div></div>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:12px;font-weight:700;color:#4caf50;min-width:38px;text-align:right;">93,1%</span>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#dcfce7;color:#16a34a;padding:2px 7px;border-radius:10px;white-space:nowrap;">PROMOTOR</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:11px;font-weight:600;color:#1D1D1B;min-width:110px;">Sector</span>
+              <div style="flex:1;background:#eee;border-radius:4px;height:6px;overflow:hidden;"><div style="width:88%;background:#3b82f6;height:100%;border-radius:4px;"></div></div>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:12px;font-weight:700;color:#3b82f6;min-width:38px;text-align:right;">85,0%</span>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#dbeafe;color:#2563eb;padding:2px 7px;border-radius:10px;white-space:nowrap;">REF.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:11px;font-weight:600;color:#1D1D1B;min-width:110px;">Objetivo</span>
+              <div style="flex:1;background:#eee;border-radius:4px;height:6px;overflow:hidden;"><div style="width:95%;background:#ED6845;height:100%;border-radius:4px;"></div></div>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:12px;font-weight:700;color:#ED6845;min-width:38px;text-align:right;">95,0%</span>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#fde8e0;color:#ED6845;padding:2px 7px;border-radius:10px;white-space:nowrap;">TARGET</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:11px;font-weight:600;color:#1D1D1B;min-width:110px;">IA (Pasivos)</span>
+              <div style="flex:1;background:#eee;border-radius:4px;height:6px;overflow:hidden;"><div style="width:68%;background:#ef4444;height:100%;border-radius:4px;"></div></div>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:12px;font-weight:700;color:#ef4444;min-width:38px;text-align:right;">72,0%</span>
+              <span style="font-family:'Host Grotesk',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:#fde8e8;color:#ef4444;padding:2px 7px;border-radius:10px;white-space:nowrap;">PASIVOS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparativa circles -->
+    <div class="circles-card" style="background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+      <div class="card-title" style="font-family:'Host Grotesk',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#293138;margin-bottom:16px;padding-left:10px;border-left:3px solid #ED6845;">COMPARATIVA MAYO 2026</div>
+      <div class="circles-row-panel" style="display:flex;align-items:center;justify-content:space-around;">
+        <div class="circle-wrap">
+    <div class="circle-svg-wrap">
+      <svg width="88" height="88" viewBox="0 0 88 88">
+        <circle cx="44" cy="44" r="34" fill="none" stroke="#e5e7eb" stroke-width="7"></circle>
+        <circle cx="44" cy="44" r="34" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="213.62830044410595" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 44 44)"></circle>
+      </svg>
+      <div class="circle-inner">
+        <div class="ci-label">OBJ.</div>
+        <div class="ci-val" style="color:#1D1D1B;font-size:1.15rem;font-weight:800;">95%</div>
+      </div>
+    </div>
+    <div class="circle-name">Objetivo</div>
+  </div>
+        <span style="font-size:1.4rem;color:#ccc;font-weight:300;">—</span>
+        <div class="circle-wrap">
+    <div class="circle-svg-wrap">
+      <svg width="88" height="88" viewBox="0 0 88 88">
+        <circle cx="44" cy="44" r="34" fill="none" stroke="#e5e7eb" stroke-width="7"></circle>
+        <circle cx="44" cy="44" r="34" fill="none" stroke="#ED6845" stroke-width="7" stroke-dasharray="213.62830044410595" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 44 44)"></circle>
+      </svg>
+      <div class="circle-inner">
+        <div class="ci-label">REAL</div>
+        <div class="ci-val" style="color:#ED6845;font-size:1.15rem;font-weight:800;">93,1%</div>
+      </div>
+    </div>
+    <div class="circle-name">Agente</div>
+  </div>
+        <span style="font-size:1.4rem;color:#ccc;font-weight:300;">—</span>
+        <div class="circle-wrap">
+    <div class="circle-svg-wrap">
+      <svg width="88" height="88" viewBox="0 0 88 88">
+        <circle cx="44" cy="44" r="34" fill="none" stroke="#e5e7eb" stroke-width="7"></circle>
+        <circle cx="44" cy="44" r="34" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="213.62830044410595" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 44 44)"></circle>
+      </svg>
+      <div class="circle-inner">
+        <div class="ci-label">SECTOR</div>
+        <div class="ci-val" style="color:#1D1D1B;font-size:1.15rem;font-weight:800;">85%</div>
+      </div>
+    </div>
+    <div class="circle-name">Prom. Sector</div>
+  </div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;font-family:'Host Grotesk',sans-serif;font-size:11.5px;">
+        <span>Agente vs Objetivo (95%) <strong style="color:#ED6845;">−1,9pp</strong></span>
+        <span>IA CSAT <strong style="color:#ef4444;">72% (Pasivos)</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="main-grid" style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;">
+    <div class="chart-card" style="background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+      <div class="card-title" style="font-family:'Host Grotesk',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#293138;margin-bottom:16px;padding-left:10px;border-left:3px solid #ED6845;">EVOLUCIÓN CSAT — AGENTE VS IA (BOT) VS OBJETIVO</div>
+      <canvas id="ch-satisfaccion" height="469" style="display: block; box-sizing: border-box; height: 469px; width: 1566px;" width="1566"></canvas>
+    </div>
+  </div>
+
+  <!-- BOTTOM: tips only -->
+  <div class="bottom-grid" style="display:grid;grid-template-columns:1fr;gap:12px;">
+    <div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">🏆 Logro</span><span class="tips-summary-badge s-red">⚠️ Alerta</span><span class="tips-summary-badge s-orange">📊 Acción</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">🏆</span>LOGRO</span>
+    <div class="tip-alert-title">Agente en promotores (93,1%)</div>
+    <div class="tip-alert-body">Supera sector (+8,1pp) pero falta 1,9pp para el objetivo. Foco en casos de mayor duración.</div>
+  </div><div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">⚠️</span>ALERTA</span>
+    <div class="tip-alert-title">IA en zona de riesgo (72%)</div>
+    <div class="tip-alert-body">24,7% de detractores. Escalar más rápido a agente cuando el bot no resuelve puede elevar el CSAT IA.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">📊</span>ACCIÓN</span>
+    <div class="tip-alert-title">Brecha IA-Agente de 21,1pp</div>
+    <div class="tip-alert-body">Implementar encuestas post-interacción diferenciadas para identificar causas de baja satisfacción en IA.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- === PAGE: CALIDAD === -->
+<div class="page" id="page-calidad">
+<style>
+.calidad-top { display:grid; grid-template-columns:60px 1fr 2fr; gap:12px; margin-bottom:14px; }
+.calidad-label-pill { background:#293138; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+.calidad-label-pill span { color:#fff; font-weight:700; font-size:11px; writing-mode:vertical-rl; transform:rotate(180deg); letter-spacing:1px; text-transform:uppercase; }
+.calidad-mayo-card { background:#fff; border-radius:10px; padding:16px 18px; display:flex; flex-direction:column; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.calidad-mayo-card .mc-label { font-size:10px; font-weight:700; color:#888; letter-spacing:1px; text-transform:uppercase; }
+.calidad-mayo-card .mc-val { font-size:38px; font-weight:700; color:#ED6845; line-height:1.1; }
+.calidad-mayo-card .mc-diff { font-size:12px; color:#666; margin-top:2px; }
+.calidad-comparativa { background:#fff; border-radius:10px; padding:14px 18px; box-shadow:0 1px 4px rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:6px; }
+.calidad-comparativa .comp-title { font-size:10px; font-weight:700; color:#ED6845; letter-spacing:1px; text-transform:uppercase; border-left:3px solid #ED6845; padding-left:8px; margin-bottom:4px; }
+.calidad-comparativa .circles-row { display:flex; align-items:center; gap:0; flex:1; }
+.calidad-comparativa .ci-block { display:flex; flex-direction:column; align-items:center; flex:1; }
+.calidad-comparativa .ci-sep { width:2px; height:50px; background:#eee; }
+.calidad-comparativa .ci-val { font-size:22px; font-weight:700; }
+.calidad-comparativa .ci-label { font-size:9px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#aaa; margin-top:2px; }
+.calidad-chart-row { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:14px; }
+.calidad-chart-card { background:#fff; border-radius:10px; padding:16px 18px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.calidad-chart-card h4 { font-size:11px; font-weight:700; color:#293138; text-transform:uppercase; letter-spacing:1px; border-left:3px solid #ED6845; padding-left:8px; margin-bottom:12px; }
+</style>
+
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Calidad</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" id="calidad-mayo-val" style="color: rgb(255, 152, 0);">7,0</div>
+    <div class="mc-diff">▲ +0,3 vs abr. &nbsp;|&nbsp; Obj. 8 &nbsp;|&nbsp; Sector 7,5</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Distribución por canal</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">IA Óptimo</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">66,9%</div>
+          <div style="font-size:9px;color:#888;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;">BUENO</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Agente Óptimo</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">40,5%</div>
+          <div style="font-size:9px;color:#888;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;">BAJO</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">IA Mejorable</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">30,2%</div>
+          <div style="font-size:9px;color:#888;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;">ALERTA</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Agente Mejorable</div>
+          <div style="font-size:16px;font-weight:700;color:#f44336;">50,5%</div>
+          <div style="font-size:9px;color:#888;background:#ffebee;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;">ALERTA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026 (IA)</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;">
+          <div class="ci-val" style="color:#1D1D1B;">8</div>
+          <div class="ci-label">OBJETIVO</div>
+        </div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="175.92918860102841 25.132741228718345" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;">
+          <div class="ci-val" style="color:#ff9800;">7</div>
+          <div class="ci-label">IA · MAYO</div>
+        </div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;">
+          <div class="ci-val" style="color:#1D1D1B;">7,5</div>
+          <div class="ci-label">SECTOR</div>
+        </div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>IA vs Objetivo (8) <strong>87,5%</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">Agente score <strong>6</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Score Calidad — IA vs Agente vs Objetivo</h4>
+    <canvas id="chart-calidad-evol" height="78" style="display: block; box-sizing: border-box; height: 78px; width: 260px;" width="260"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">⭐ Logro</span><span class="tips-summary-badge s-orange">🎯 Acción</span><span class="tips-summary-badge s-blue">📈 Oportunidad</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">⭐</span>LOGRO</span>
+    <div class="tip-alert-title">IA supera al agente (7 vs 6)</div>
+    <div class="tip-alert-body">El bot mantiene un tono más consistente. Diferencial positivo y diferenciador.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🎯</span>ACCIÓN</span>
+    <div class="tip-alert-title">Agente con solo 40,5% en óptimo</div>
+    <div class="tip-alert-body">Implementar coaching semanal basado en conversaciones reales del sistema de auditoría.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">📈</span>OPORTUNIDAD</span>
+    <div class="tip-alert-title">A 1 punto del objetivo (8)</div>
+    <div class="tip-alert-body">Con mejora del 30% de conversaciones IA en "mejorable" se puede alcanzar el score objetivo antes de Q3.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: VEL1 === -->
+<div class="page" id="page-vel1">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>T. 1ª Resp.</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#ff9800;">37s</div>
+    <div class="mc-diff">▲ −5s vs abr. &nbsp;|&nbsp; Obj. &lt;30s &nbsp;|&nbsp; Sector 45s</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Rendimiento canal IA</div>
+      <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:10px;color:#666;font-weight:600;">En rango óptimo (&lt;30s)</div>
+          <div style="font-size:22px;font-weight:700;color:#4caf50;">97,4%</div>
+        </div>
+        <div style="font-size:24px;">✅</div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026 (IA)</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">&lt;30s</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="162.8601631620949 38.20176666765188" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">37s</div><div class="ci-label">IA · MAYO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">45s</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>IA vs Objetivo (&lt;30s) <strong style="color:#ff9800;">+7s</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">Mejor que sector por <strong style="color:#4caf50;">−8s</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Tiempo 1ª Respuesta — IA vs Agente vs Objetivo</h4>
+    <canvas id="chart-vel1-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">🚀 Logro</span><span class="tips-summary-badge s-orange">⏱️ Atención</span><span class="tips-summary-badge s-blue">🎯 Acción</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">🚀</span>LOGRO</span>
+    <div class="tip-alert-title">IA 17% más rápida que el sector (37s vs 45s)</div>
+    <div class="tip-alert-body">Ventaja competitiva a mantener y comunicar.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">⏱️</span>ATENCIÓN</span>
+    <div class="tip-alert-title">Agente en 40s, 18,3% en crítico</div>
+    <div class="tip-alert-body">Revisar distribución de carga en horas pico y cuellos de botella en apertura de turno.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">🎯</span>ACCIÓN</span>
+    <div class="tip-alert-title">El objetivo de &lt;30s está a 7s</div>
+    <div class="tip-alert-body">Optimizar validaciones iniciales del bot para reducir el tiempo del primer mensaje.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: VEL2 === -->
+<div class="page" id="page-vel2">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>T. Resp.</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#4caf50;">35s</div>
+    <div class="mc-diff">▼ +2s vs abr. &nbsp;|&nbsp; Obj. &lt;1m &nbsp;|&nbsp; IA 35s — Agente 1,6m</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Distribución canal</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#e8f5e9;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#666;font-weight:600;">IA vs Objetivo</div>
+          <div style="font-size:15px;font-weight:700;color:#4caf50;">Excelente</div>
+          <div style="font-size:9px;color:#4caf50;">35s — Obj &lt;60s</div>
+        </div>
+        <div style="background:#ffebee;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#666;font-weight:600;">Agente crítico &gt;5m</div>
+          <div style="font-size:15px;font-weight:700;color:#f44336;">18,8%</div>
+          <div style="font-size:9px;color:#f44336;">Requiere acción</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">&lt;1m</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#4caf50;">35s</div><div class="ci-label">IA MAYO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ffebee" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#f44336" stroke-width="7" stroke-dasharray="74.3929140370063 126.66901579274045" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#f44336;">1,6m</div><div class="ci-label">AGENTE</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>IA vs Objetivo (&lt;60s) <strong style="color:#4caf50;">Excelente</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">Agente crítico &gt;5m <strong style="color:#f44336;">18,8%</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Tiempo entre Respuestas — IA vs Agente</h4>
+    <canvas id="chart-vel2-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">⚡ Logro</span><span class="tips-summary-badge s-red">⚠️ Alerta</span><span class="tips-summary-badge s-blue">🤖 Oportunidad</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">⚡</span>LOGRO</span>
+    <div class="tip-alert-title">IA en Excelente (35s, 3,4x mejor que objetivo)</div>
+    <div class="tip-alert-body">Ventaja diferencial clara. 97,3% en rango óptimo.</div>
+  </div><div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">⚠️</span>ALERTA</span>
+    <div class="tip-alert-title">Agente 18,8% en crítico (&gt;5min)</div>
+    <div class="tip-alert-body">Establecer SLAs internos con alertas automáticas en tiempo real para los agentes.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">🤖</span>OPORTUNIDAD</span>
+    <div class="tip-alert-title">Potenciar con sugerencias IA al agente</div>
+    <div class="tip-alert-body">Proponer respuestas automáticas al humano reduciría el 1,6m actual a menos de 45s.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: DURACION === -->
+<div class="page" id="page-duracion">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Duración</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#f44336;">44m</div>
+    <div class="mc-diff">▼ +2m vs abr. &nbsp;|&nbsp; Obj. &lt;20m &nbsp;|&nbsp; Sector 25m</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Distribución Agente por rangos</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Excelente (&lt;10m)</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">20,9%</div>
+          <div style="font-size:9px;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#4caf50;">OK</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Bueno (10-20m)</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">9,4%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">BAJO</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Mejorable (20-35m)</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">12,0%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">ALERTA</div>
+        </div>
+        <div style="background:#ffebee;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Crítico (&gt;35m)</div>
+          <div style="font-size:16px;font-weight:700;color:#f44336;">57,8%</div>
+          <div style="font-size:9px;background:#ffebee;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#f44336;">CRÍTICO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">&lt;20m</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ffebee" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#f44336" stroke-width="7" stroke-dasharray="90.47786842338604 110.58406140636073" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#f44336;">44m</div><div class="ci-label">AGENTE</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">25m</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>Agente vs Objetivo <strong style="color:#f44336;">+220%</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">Crítico &gt;35m <strong style="color:#f44336;">57,8%</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Duración — Agente vs IA vs Objetivo</h4>
+    <canvas id="chart-duracion-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">🚨 Alerta</span><span class="tips-summary-badge s-red">📉 Alerta</span><span class="tips-summary-badge s-orange">🔧 Acción</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">🚨</span>ALERTA CRÍTICA</span>
+    <div class="tip-alert-title">Agente en CRITICAL (44m vs obj. &lt;20m)</div>
+    <div class="tip-alert-body">57,8% de conversaciones superan 35 minutos. El doble que el sector (25m).</div>
+  </div><div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>ALERTA</span>
+    <div class="tip-alert-title">Tendencia alcista 4 meses</div>
+    <div class="tip-alert-body">De 38m a 44m. Sin intervención puede superar los 50m en Q3 elevando el coste por ticket.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🔧</span>ACCIÓN INMEDIATA</span>
+    <div class="tip-alert-title">Auditoría urgente recomendada</div>
+    <div class="tip-alert-body">Auditar las 20 conversaciones más largas del mes. Implementar plantillas de cierre rápido y técnicas de resolución eficiente.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: SENTIMIENTO === -->
+<div class="page" id="page-sentimiento">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Sentimiento</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#ff9800;">4,0</div>
+    <div class="mc-diff">▼ −0,1 vs abr. &nbsp;|&nbsp; Obj. &gt;7 &nbsp;|&nbsp; Sector 5,5</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Distribución Sentimiento — Agente</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#e8f5e9;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Excelente (7-10)</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">20,3%</div>
+          <div style="font-size:9px;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#4caf50;">OK</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Bueno (5-7)</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">6,6%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">BAJO</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Mejorable (3-5)</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">20,2%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">ALERTA</div>
+        </div>
+        <div style="background:#ffebee;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Crítico (&lt;3)</div>
+          <div style="font-size:16px;font-weight:700;color:#f44336;">52,9%</div>
+          <div style="font-size:9px;background:#ffebee;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#f44336;">CRÍTICO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">&gt;7</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="114.60530000295564 86.4566298267911" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">4,0</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">5,5</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>vs Objetivo (&gt;7) <strong style="color:#ff9800;">57,1%</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">Agente crítico &gt;52% <strong style="color:#f44336;">52,9%</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Sentimiento — IA vs Agente vs Objetivo</h4>
+    <canvas id="chart-sentimiento-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">😟 Alerta</span><span class="tips-summary-badge s-orange">📉 Atención</span><span class="tips-summary-badge s-orange">🎯 Acción</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">😟</span>ALERTA</span>
+    <div class="tip-alert-title">Ambos canales en "Mejorable" (score 4)</div>
+    <div class="tip-alert-body">Brecha de 3 puntos vs objetivo. Experiencias frustrantes generalizadas que requieren acción prioritaria.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>ATENCIÓN</span>
+    <div class="tip-alert-title">Tendencia bajista 4 meses seguidos en IA</div>
+    <div class="tip-alert-body">Correlaciona directamente con la caída en tasa de resolución. A menor resolución, peor sentimiento.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🎯</span>PLAN DE ACCIÓN</span>
+    <div class="tip-alert-title">Mejorar resolución IA al 60%</div>
+    <div class="tip-alert-body">Tendría efecto directo en sentimiento. Implementar mensajes de empatía proactiva en el bot.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: FRUSTRACION === -->
+<div class="page" id="page-frustracion">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Frustración</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#4caf50;">2,0</div>
+    <div class="mc-diff">▲ −0,2 vs abr. &nbsp;|&nbsp; Obj. &lt;3 &nbsp;|&nbsp; Sector 4</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Distribución óptimo IA vs Agente</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#e8f5e9;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">IA en rango óptimo</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">94,4%</div>
+          <div style="font-size:9px;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#4caf50;">EXCELENTE</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Agente en rango ópt.</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">89,5%</div>
+          <div style="font-size:9px;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#4caf50;">BUENO</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">IA crítico</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">5,6%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">RESIDUAL</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Agente crítico</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">10,5%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">BAJO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026 (IA)</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">&lt;3</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#4caf50;">2</div><div class="ci-label">IA MAYO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">4</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>IA en Excelente (obj. &lt;3) <strong style="color:#4caf50;">✓</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">94,4% IA en rango óptimo</span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Frustración — IA vs Agente (menor = mejor)</h4>
+    <canvas id="chart-frustracion-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card tips-open">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">😊 Logro</span><span class="tips-summary-badge s-green">📉 Logro</span><span class="tips-summary-badge s-blue">💡 Insight</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">😊</span>LOGRO</span>
+    <div class="tip-alert-title">IA en Excelente (score 2)</div>
+    <div class="tip-alert-body">Punto fuerte del canal. A pesar de baja resolución, la frustración generada es mínima.</div>
+  </div><div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>LOGRO</span>
+    <div class="tip-alert-title">Tendencia bajista positiva 4 meses</div>
+    <div class="tip-alert-body">De 2,5 (feb) a 2,0 (mayo). Correlaciona con mejoras en el diseño conversacional del bot.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">💡</span>INSIGHT</span>
+    <div class="tip-alert-title">Paradoja sentimiento-frustración</div>
+    <div class="tip-alert-body">Clientes no satisfechos (sentimiento 4/10) pero no exasperados (frustración 2/10). Momento clave para actuar antes de que escale.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: RETENCION === -->
+<div class="page active" id="page-retencion">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Retención IA</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#ff9800;">49,9%</div>
+    <div class="mc-diff">▼ −2,1pp vs abr. &nbsp;|&nbsp; Obj. 80% &nbsp;|&nbsp; Sector 65%</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Benchmarks Retención IA</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Objetivo</div>
+          <div style="font-size:16px;font-weight:700;color:#293138;">80%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">TARGET</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Sector</div>
+          <div style="font-size:16px;font-weight:700;color:#293138;">65%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">REF.</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Promedio 2026</div>
+          <div style="font-size:16px;font-weight:700;color:#666;">55%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">PROM.</div>
+        </div>
+        <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Mayo 2026</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">49,9%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">CRÍTICO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">80%</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="125.46264421376198 75.59928561598478" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">49,9%</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">65%</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>vs Objetivo (80%) <strong style="color:#f44336;">−30,1pp</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">vs Sector (65%) <strong style="color:#ff9800;">−15,1pp</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Retención IA vs Objetivo vs Promedio 2026</h4>
+    <canvas id="chart-retencion-evol" height="78" style="display: block; box-sizing: border-box; height: 78px; width: 260px;" width="260"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">🚨 Alerta</span><span class="tips-summary-badge s-red">📉 Alerta</span><span class="tips-summary-badge s-orange">🧠 Plan</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">🚨</span>ALERTA CRÍTICA</span>
+    <div class="tip-alert-title">30pp por debajo del objetivo</div>
+    <div class="tip-alert-body">Cada 2 clientes que contactan con la IA, 1 no es atendido correctamente. Gap crítico para el ROI.</div>
+  </div><div class="tip-alert-card tip-red">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>ALERTA</span>
+    <div class="tip-alert-title">Tendencia bajista 4 meses</div>
+    <div class="tip-alert-body">Caída de 6pp. Si continúa, en Q3 estaremos bajo el 45%, nivel crítico de sostenibilidad.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🧠</span>PLAN DE ENTRENAMIENTO</span>
+    <div class="tip-alert-title">Mejorar base de conocimiento IA</div>
+    <div class="tip-alert-body">Auditar intents frecuentes no resueltos, añadir FAQs, mejorar base de conocimiento y revisar umbrales de confianza del modelo.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: DEFLECCION === -->
+<div class="page" id="page-defleccion">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Deflección IA</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#ff9800;">42,7%</div>
+    <div class="mc-diff">▼ −1,3pp vs abr. &nbsp;|&nbsp; Obj. 70% &nbsp;|&nbsp; Sector 55%</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Impacto económico</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Deflección actual</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">42,7%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">ACTUAL</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Objetivo Q3</div>
+          <div style="font-size:16px;font-weight:700;color:#293138;">55%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">Q3 META</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Objetivo anual</div>
+          <div style="font-size:16px;font-weight:700;color:#293138;">70%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">ANUAL</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Ahorro potencial</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">+10€/tk</div>
+          <div style="font-size:9px;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#4caf50;">ROI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">70%</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="122.64777719614553 78.41415263360123" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">42,7%</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">55%</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>vs Objetivo (70%) <strong style="color:#f44336;">−27,3pp</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">vs Sector (55%) <strong style="color:#ff9800;">−12,3pp</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Deflección IA vs Objetivo vs Promedio</h4>
+    <canvas id="chart-defleccion-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">💰 Oportunidad</span><span class="tips-summary-badge s-orange">🏁 Atención</span><span class="tips-summary-badge s-blue">📅 Plan</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">💰</span>OPORTUNIDAD</span>
+    <div class="tip-alert-title">Impacto directo en costes</div>
+    <div class="tip-alert-body">Cada punto de deflección ganado ahorra ~10,30€ por ticket. Pasar al 70% supone un ahorro significativo mensual.</div>
+  </div><div class="tip-alert-card tip-orange">
+    <span class="tip-badge"><span class="tip-badge-icon">🏁</span>ATENCIÓN</span>
+    <div class="tip-alert-title">12,3pp por debajo del sector</div>
+    <div class="tip-alert-body">El sector deflecta más del 55%. Identificar qué tipologías deflecta el sector que nosotros no gestionamos con IA.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">📅</span>PLAN POR ETAPAS</span>
+    <div class="tip-alert-title">Meta progresiva hacia el objetivo</div>
+    <div class="tip-alert-body">Objetivo intermedio del 55% para septiembre y 65% para diciembre con el plan de mejora activo.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- === PAGE: ABANDONO === -->
+<div class="page" id="page-abandono">
+<div class="calidad-top">
+  <div class="calidad-label-pill"><span>Abandono IA</span></div>
+  <div class="calidad-mayo-card">
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#ff9800;">9,9%</div>
+    <div class="mc-diff">▲ −0,4pp vs abr. &nbsp;|&nbsp; Obj. &lt;5% &nbsp;|&nbsp; Sector 12%</div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
+      <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Benchmarks Abandono IA</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Objetivo Excelente</div>
+          <div style="font-size:16px;font-weight:700;color:#293138;">&lt;5%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">TARGET</div>
+        </div>
+        <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Mayo 2026</div>
+          <div style="font-size:16px;font-weight:700;color:#ff9800;">9,9%</div>
+          <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">BUENO</div>
+        </div>
+        <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Sector</div>
+          <div style="font-size:16px;font-weight:700;color:#666;">12,0%</div>
+          <div style="font-size:9px;background:#f0f0f0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#666;">REF.</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10px;color:#888;font-weight:600;">Tendencia</div>
+          <div style="font-size:16px;font-weight:700;color:#4caf50;">−1,3pp</div>
+          <div style="font-size:9px;background:#e8f5e9;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#4caf50;">MEJORA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="calidad-comparativa">
+    <div class="comp-title">Comparativa Mayo 2026</div>
+    <div class="circles-row">
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">&lt;5%</div><div class="ci-label">OBJETIVO</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="101.53627456402211 99.52565526572465" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">9,9%</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+      <div class="ci-sep"></div>
+      <div class="ci-block">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#e8f5e9" stroke-width="7"></circle>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="#4caf50" stroke-width="7" stroke-dasharray="201.06192982974676" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
+        </svg>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#1D1D1B;">12%</div><div class="ci-label">SECTOR</div></div>
+        <div style="margin-top:40px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px;font-size:11px;color:#888;border-top:1px solid #f0f0f0;padding-top:6px;margin-top:4px;">
+      <span>Mejor que sector (12%) <strong style="color:#4caf50;">−2,1pp</strong></span>
+      <span style="border-left:1px solid #ddd;padding-left:16px;">vs Objetivo (&lt;5%) <strong style="color:#ff9800;">+4,9pp</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="calidad-chart-row">
+  <div class="calidad-chart-card">
+    <h4>Evolución Abandono IA vs Objetivo (menor = mejor)</h4>
+    <canvas id="chart-abandono-evol" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+  </div>
+</div>
+
+<div class="tips-card">
+    <div class="tips-header">
+      <div class="tips-header-left">
+        <div class="tips-header-accent"></div>
+        <span class="tips-header-title">Análisis y Recomendaciones</span>
+        <span class="tips-info-badge">
+    <span class="tips-info-badge-label">Info</span>
+    <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+  </span><div class="tips-summary-badges"><span class="tips-summary-badge s-green">🏆 Logro</span><span class="tips-summary-badge s-green">📉 Logro</span><span class="tips-summary-badge s-blue">🎯 Acción</span></div>
+      </div>
+      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="tips-body">
+      <div class="tips-grid">
+      <div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">🏆</span>LOGRO</span>
+    <div class="tip-alert-title">Mejor que el sector (9,9% vs 12%)</div>
+    <div class="tip-alert-body">El abandono es 17% inferior al promedio del sector. Punto positivo en la experiencia con el bot.</div>
+  </div><div class="tip-alert-card tip-green">
+    <span class="tip-badge"><span class="tip-badge-icon">📉</span>LOGRO</span>
+    <div class="tip-alert-title">Tendencia bajista positiva 4 meses</div>
+    <div class="tip-alert-body">−1,3pp acumulado. El rediseño de flujos conversacionales está teniendo efecto visible.</div>
+  </div><div class="tip-alert-card tip-blue">
+    <span class="tip-badge"><span class="tip-badge-icon">🎯</span>ACCIÓN</span>
+    <div class="tip-alert-title">A 4,9pp del objetivo excelente</div>
+    <div class="tip-alert-body">Revisar puntos de abandono en el flujo e implementar mensajes de re-engagement y oferta de transferencia a agente en el momento crítico.</div>
+  </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+
+<script>
+const NAR='#ED6845', GRN='#3ecf8e', YEL='#f5c842', RED='#f05252', BLU='#5b7fa6', MUT='#4a5a6a';
+const LABELS=['Feb-26','Mar-26','Abr-26','May-26'];
+const charts={};
+
+const defs = {
+  conversaciones:{ datasets:[
+    {label:'Conversaciones',data:[2210,2180,2091,1987],borderColor:NAR,backgroundColor:'rgba(237,104,69,0.1)',fill:true},
+    {label:'Promedio 2026',data:[2104,2104,2104,2104],borderColor:MUT,borderDash:[6,3]}
+  ]},
+  coste:{ datasets:[
+    {label:'Agente (€)',data:[4.6,5.2,9.4,11.14],borderColor:NAR},
+    {label:'IA (€)',data:[0.9,0.9,1.1,0.84],borderColor:GRN},
+    {label:'Objetivo (€)',data:[4,4,4,4],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  resolucion:{ datasets:[
+    {label:'IA (%)',data:[56,55,52,49.9],borderColor:NAR},
+    {label:'Agente (%)',data:[54,54,53,52.7],borderColor:BLU},
+    {label:'Objetivo (%)',data:[60,60,60,60],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  satisfaccion:{ datasets:[
+    {label:'Agente (%)',data:[92,95,94,93.1],borderColor:NAR},
+    {label:'Bot/IA (%)',data:[72,70,69,68],borderColor:RED},
+    {label:'Objetivo (%)',data:[95,95,95,95],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  calidad:{ datasets:[
+    {label:'IA (score)',data:[7.1,6.9,6.7,7.0],borderColor:NAR},
+    {label:'Agente (score)',data:[6.5,6.3,6.2,6.0],borderColor:BLU},
+    {label:'Objetivo',data:[8,8,8,8],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  vel1:{ datasets:[
+    {label:'IA (s)',data:[35,36,42,37],borderColor:GRN},
+    {label:'Agente (s)',data:[38,39,44,40],borderColor:BLU},
+    {label:'Objetivo (s)',data:[30,30,30,30],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  vel2:{ datasets:[
+    {label:'IA (s)',data:[38,36,33,35],borderColor:GRN},
+    {label:'Agente (s)',data:[95,100,98,96],borderColor:BLU},
+    {label:'Objetivo (s)',data:[60,60,60,60],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  duracion:{ datasets:[
+    {label:'Agente (min)',data:[38,41,42,44],borderColor:RED},
+    {label:'IA (min)',data:[30,29,28,28],borderColor:GRN},
+    {label:'Objetivo (min)',data:[20,20,20,20],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  sentimiento:{ datasets:[
+    {label:'IA',data:[4.5,4.3,4.1,4.0],borderColor:NAR},
+    {label:'Agente',data:[4.5,4.3,4.1,4.0],borderColor:BLU},
+    {label:'Objetivo',data:[7,7,7,7],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  frustracion:{ datasets:[
+    {label:'IA (score)',data:[2.5,2.4,2.2,2.0],borderColor:GRN},
+    {label:'Agente (score)',data:[3.2,3.1,3.0,3.0],borderColor:BLU},
+    {label:'Objetivo',data:[3,3,3,3],borderColor:YEL,borderDash:[6,3]}
+  ]},
+  retencion:{ datasets:[
+    {label:'Retención IA (%)',data:[56,55,52,49.9],borderColor:NAR},
+    {label:'Objetivo (%)',data:[80,80,80,80],borderColor:YEL,borderDash:[6,3]},
+    {label:'Prom. 2026 (%)',data:[55,55,55,55],borderColor:MUT,borderDash:[4,4]}
+  ]},
+  defleccion:{ datasets:[
+    {label:'Deflección IA (%)',data:[48,46,44,42.7],borderColor:NAR},
+    {label:'Objetivo (%)',data:[70,70,70,70],borderColor:YEL,borderDash:[6,3]},
+    {label:'Prom. 2026 (%)',data:[46,46,46,46],borderColor:MUT,borderDash:[4,4]}
+  ]},
+  abandono:{ datasets:[
+    {label:'Abandono IA (%)',data:[11.2,10.8,10.3,9.9],borderColor:NAR},
+    {label:'Objetivo (%)',data:[5,5,5,5],borderColor:GRN,borderDash:[6,3]},
+    {label:'Prom. 2026 (%)',data:[10.5,10.5,10.5,10.5],borderColor:MUT,borderDash:[4,4]}
+  ]}
+};
+
+function renderChart(id){
+  const def=defs[id]; if(!def) return;
+  const el=document.getElementById('ch-'+id); if(!el) return;
+  if(charts[id]){charts[id].destroy();}
+  charts[id]=new Chart(el,{
+    type:'line',
+    data:{labels:LABELS, datasets:def.datasets.map(d=>({...d,tension:0.35,pointRadius:5,pointBackgroundColor:d.borderColor,borderWidth:2.5,borderDash:d.borderDash||[]}))},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#8a9bb0',font:{size:11,family:'Host Grotesk'},usePointStyle:true,padding:14}},
+        tooltip:{mode:'index',intersect:false,backgroundColor:'#1a2229',borderColor:'#2a3a4a',borderWidth:1,titleColor:'#fff',bodyColor:'#c8d4e0'}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8a9bb0',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8a9bb0',font:{size:11}},beginAtZero:false}
+      }
+    }
+  });
+}
+
+function showPage(id, el, level, kpi){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('hdr-level').textContent='INDICADORES COMITÉ EJECUTIVO — '+level.toUpperCase();
+  document.getElementById('hdr-kpi').textContent=kpi;
+  setTimeout(()=>renderChart(id),80);
+}
+
+setTimeout(()=>renderChart('conversaciones'),150);
+</script>
+<div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out;"><div id="claude-agent-glow-border-inner" style="position: absolute; inset: 0px; will-change: opacity; box-shadow: rgba(217, 119, 87, 0.7) 0px 0px 15px inset, rgba(217, 119, 87, 0.5) 0px 0px 25px inset, rgba(217, 119, 87, 0.2) 0px 0px 35px inset;"></div></div><div id="claude-agent-stop-container" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); justify-content: center; align-items: center; pointer-events: none; z-index: 2147483647;"><button id="claude-agent-stop-button" style="position: relative; transform: translateY(0px); padding: 12px 16px; background: rgb(250, 249, 245); color: rgb(20, 20, 19); border: 0.5px solid rgba(31, 30, 29, 0.4); border-radius: 12px; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: rgba(217, 119, 87, 0.24) 0px 40px 80px, rgba(217, 119, 87, 0.24) 0px 4px 14px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity: 1; user-select: none; pointer-events: auto; white-space: nowrap; margin: 0px auto;">
+      <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" style="margin-right: 12px; vertical-align: middle;">
+        <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm40-112v56a12,12,0,0,1-12,12H100a12,12,0,0,1-12-12V100a12,12,0,0,1,12-12h56A12,12,0,0,1,168,100Z"></path>
+      </svg>
+      <span style="vertical-align: middle;">Stop Claude</span>
+    </button></div><div id="claude-phantom-cursor" aria-hidden="true" style="position: fixed; top: 0px; left: 0px; pointer-events: none; z-index: 2147483646; transform: translate3d(120px, 301px, 0px); transition: transform 180ms cubic-bezier(0.2, 0, 0, 1); will-change: transform;"><svg id="claude-phantom-cursor-plain" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible;"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="white" stroke-width="3" stroke-linejoin="round" fill="white"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#111"></path></svg><svg id="claude-phantom-cursor-styled" width="20" height="26" viewBox="0 0 20 26" style="position: absolute; top: 0px; left: 0px; overflow: visible; filter: drop-shadow(rgba(217, 119, 87, 0.9) 0px 0px 4px) drop-shadow(rgba(217, 119, 87, 0.45) 0px 0px 10px);"><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" stroke="#D97757" stroke-width="3" stroke-linejoin="round" fill="#D97757"></path><path d="M0 0 L0 18 L4.5 14 L7.5 21.5 L11 20 L8 13 L14 13 Z" fill="#FAF9F5"></path></svg></div></body></html>
