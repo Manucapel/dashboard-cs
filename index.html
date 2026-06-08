@@ -1,4 +1,215 @@
-<html lang="es"><plasmo-csui id="ff-overlay-container"></plasmo-csui><head><script src="chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/js/recordConsoleEvents.js"></script><style>@font-face { font-family: DMSans; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/DMSans-Regular.ttf'); }@font-face { font-family: PoppinsMedium; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Medium.otf'); }@font-face { font-family: PoppinsRegular; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Regular.otf'); }@font-face { font-family: Roboto; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Roboto-Regular.ttf'); }@font-face { font-family: Inter; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Inter-VariableFont_opsz,wght.ttf'); }</style><style id="submenu-style">
+<!DOCTYPE html>
+<html lang="es"><plasmo-csui id="ff-overlay-container"></plasmo-csui><head><script src="chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/js/recordConsoleEvents.js"></script><style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style><style>@font-face { font-family: DMSans; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/DMSans-Regular.ttf'); }@font-face { font-family: PoppinsMedium; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Medium.otf'); }@font-face { font-family: PoppinsRegular; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Regular.otf'); }@font-face { font-family: Roboto; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Roboto-Regular.ttf'); }@font-face { font-family: Inter; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Inter-VariableFont_opsz,wght.ttf'); }</style><style>
+  .verdict-banner {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
+    border-radius: 14px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    border-left: 5px solid #fbbf24;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+    margin-top: 8px;
+  }
+  .verdict-banner .vb-icon { font-size: 40px; flex-shrink: 0; margin-top: 2px; }
+  .verdict-banner .vb-body h3 { font-size: 15px; font-weight: 800; color: #fff; margin: 0 0 10px; }
+  .verdict-banner .vb-body p  { font-size: 12.5px; color: rgba(255,255,255,0.72); margin: 0 0 6px; line-height: 1.6; }
+  .verdict-scores {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .vs-chip {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vs-chip.agente { background: rgba(237,104,69,0.2); color: #ED6845; border: 1px solid rgba(237,104,69,0.4); }
+  .vs-chip.ia     { background: rgba(76,175,80,0.2);  color: #4caf50; border: 1px solid rgba(76,175,80,0.4); }
+  .vs-chip.global { background: rgba(167,139,250,0.2);color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+</style><style id="verdict-collapsible-style">
+  .verdict-collapsible {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
+    border-radius: 14px;
+    border-left: 5px solid #fbbf24;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .verdict-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .verdict-header:hover { background: rgba(255,255,255,0.03); }
+  .verdict-header .vh-icon { font-size: 32px; flex-shrink: 0; }
+  .verdict-header .vh-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.35;
+  }
+  .verdict-header .vh-toggle {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(251,191,36,0.15);
+    border: 1px solid rgba(251,191,36,0.35);
+    display: flex; align-items: center; justify-content: center;
+    color: #fbbf24;
+    font-size: 13px;
+    transition: transform 0.3s ease;
+  }
+  .verdict-collapsible.open .vh-toggle { transform: rotate(180deg); }
+  .verdict-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+  .verdict-collapsible.open .verdict-body {
+    max-height: 300px;
+    opacity: 1;
+  }
+  .verdict-body-inner {
+    padding: 0 24px 22px 72px;
+  }
+  .verdict-body-inner p {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.72);
+    margin: 0 0 8px;
+    line-height: 1.6;
+  }
+  .verdict-scores {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .vs-chip {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .vs-chip.agente { background: rgba(237,104,69,0.2); color: #ED6845; border: 1px solid rgba(237,104,69,0.4); }
+  .vs-chip.ia     { background: rgba(76,175,80,0.2);  color: #4caf50; border: 1px solid rgba(76,175,80,0.4); }
+  .vs-chip.global { background: rgba(167,139,250,0.2);color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+  .verdict-note {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 10px;
+    font-style: italic;
+  }
+</style><style>
+  #coste-top-unified {
+    display: grid;
+    grid-template-columns: 60px 1fr 60px 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .coste-label-pill {
+    background: #293138;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .coste-label-pill span {
+    color: #fff;
+    font-weight: 700;
+    font-size: 11px;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .coste-mayo-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .coste-mayo-card .mc-channel {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 4px;
+    width: fit-content;
+  }
+  .coste-mayo-card.agente .mc-channel { background: #fff3e0; color: #ED6845; }
+  .coste-mayo-card.ia .mc-channel     { background: #e3f2fd; color: #1976d2; }
+  .coste-mayo-card .mc-label { font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+  .coste-mayo-card .mc-val   { font-size: 38px; font-weight: 700; line-height: 1.1; }
+  .coste-mayo-card .mc-diff  { font-size: 12px; color: #666; margin-top: 2px; }
+  .coste-mayo-card .mc-badge {
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-block;
+    width: fit-content;
+  }
+  .coste-mayo-card.agente .mc-badge { background: #ffeaea; color: #c62828; }
+  .coste-mayo-card.ia .mc-badge     { background: #e8f5e9; color: #388e3c; }
+  .coste-ci-row {
+    display: flex;
+    gap: 18px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .coste-ci-block { display: flex; flex-direction: column; gap: 2px; }
+  .coste-ci-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+  .coste-ci-val   { font-size: 15px; font-weight: 700; }
+  .coste-footnote { font-size: 11px; color: #666; margin-top: 6px; }
+</style><style>
+  #page-conclusion .concl-left-cards .kpi-card::after,
+  #page-conclusion .concl-right-cards .kpi-card::before {
+    display: none !important;
+  }
+</style><style id="hide-nav-dots">.nav-dot { display: none !important; }</style><style id="main-nav-white">
+  /* Main nav items (not inside submenu) get white color */
+  .sidebar .nav-item:not(.nav-submenu-container .nav-item) {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+  /* Keep active state consistent */
+  .sidebar .nav-item.active:not(.nav-submenu-container .nav-item) {
+    color: #ffffff !important;
+  }
+</style></head><body><plasmo-csui id="ff-overlay-container"></plasmo-csui><script src="chrome-extension://liecbddmkiiihnedobmlmillhodjkdmb/js/recordConsoleEvents.js"></script><style>@font-face { font-family: DMSans; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/DMSans-Regular.ttf'); }@font-face { font-family: PoppinsMedium; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Medium.otf'); }@font-face { font-family: PoppinsRegular; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Regular.otf'); }@font-face { font-family: Roboto; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Roboto-Regular.ttf'); }@font-face { font-family: Inter; src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Inter-VariableFont_opsz,wght.ttf'); }</style><style id="submenu-style">
   .nav-item-parent {
     display: flex !important;
     align-items: center;
@@ -82,7 +293,7 @@
     border-left: 3px solid #ED6845;
     border-radius: 0 6px 6px 0;
   }
-</style></head><body><plasmo-csui id="ff-overlay-container"></plasmo-csui>
+</style><plasmo-csui id="ff-overlay-container"></plasmo-csui>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard CS | Trainingym</title>
@@ -999,7 +1210,7 @@ body { background: #F2F3F7 !important; }
   <nav>
     <div class="nav-section">Nivel I — Estratégicos</div>
     <div class="nav-item" onclick="showPage('conversaciones',this,'Nivel I','Total Conversaciones')" style="display: none;">Total Conversaciones <span class="nav-dot dot-ok"></span></div>
-    <div class="nav-item active" onclick="showPage('coste',this,'Nivel I','Coste por Ticket')">Coste por Ticket <span class="nav-dot dot-bad"></span></div>
+    <div class="nav-item" onclick="showPage('coste',this,'Nivel I','Coste por Ticket')">Coste por Ticket <span class="nav-dot dot-bad"></span></div>
     <div class="nav-item" onclick="showPage('resolucion',this,'Nivel I','Tasa de Resolución')">Tasa Resolución</div>
     <div class="nav-divider"></div>
     <div class="nav-section">Nivel II — Operativo</div>
@@ -1015,17 +1226,17 @@ body { background: #F2F3F7 !important; }
     <div class="nav-item nav-item-parent submenu-open">Retención IA <span class="nav-dot dot-warn"></span><span class="nav-arrow">▶</span></div><div class="nav-submenu-container submenu-open" id="submenu-rendimiento-ia"><div class="nav-item" onclick="showPage('defleccion',this,'IA','Deflección IA')">Deflección IA <span class="nav-dot dot-warn"></span></div><div class="nav-item" onclick="showPage('abandono',this,'IA','Abandono IA')">Abandono IA <span class="nav-dot dot-ok"></span></div></div>
     
     
-  </nav>
+  <div class="nav-divider"></div><div class="nav-section">Para Terminar</div><div class="nav-item nav-item-parent submenu-open" onclick="var sub=this.nextElementSibling; if(!sub) return; var open=sub.classList.contains('submenu-open'); this.classList.toggle('submenu-open'); sub.classList.toggle('submenu-open');">Para Terminar <span class="nav-arrow" style="font-size: 9px; transition: transform 0.2s;">▶</span></div><div class="nav-submenu-container submenu-open" id="submenu-conclusion-final"><div class="nav-item" onclick="showPage('conclusion',this,'Conclusión Final','Conclusión Final')">Conclusión Final <span class="nav-dot" style="background:#a78bfa"></span></div><div class="nav-item active" onclick="showPage('proximos',this,'Conclusión Final','Próximos Pasos')">Próximos Pasos <span class="nav-dot" style="background:#38bdf8"></span></div></div></nav>
 </div>
 
 <!-- MAIN -->
 <div class="main">
   <div class="topbar" style="">
-    <div class="topbar-left topbar-desc-open" style="">
-      <div class="topbar-level" id="hdr-level">INDICADORES COMITÉ EJECUTIVO — NIVEL I — ESTRATÉGICOS</div>
-      <div class="topbar-kpi-row"><div class="topbar-kpi" id="hdr-kpi">Coste por Ticket</div><span id="topbar-desc-toggle" style="cursor: pointer;"><span id="topbar-desc-label" style="font-family:'Host Grotesk',sans-serif;font-weight:600;font-size:9.5px;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.65);">Info</span><span id="topbar-desc-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span><span id="topbar-titular-toggle" class="">📰 Titular <span class="tit-chevron">▼</span></span></div>
-    <div id="topbar-desc" style=""><span style="color:#ED6845;font-weight:700;">Coste por Ticket:</span> Coste medio por conversación gestionada, diferenciado entre agente humano e IA. Impacto: Mide la eficiencia económica del servicio y el retorno de la inversión en IA.</div><div id="topbar-titular-area" class=""><div id="topbar-titular-text"><strong>🚨 Coste Agente dispara un 39% sobre objetivo mientras la IA marca mínimos históricos</strong><br>
-El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, un 39% por encima del objetivo de 8€ y un 59% sobre el sector (7€), con tendencia alcista preocupante. En contraste, la IA reduce su coste a <strong>0,84€</strong>, un 16% por debajo del objetivo (1€) y un 20% inferior al sector (1,05€). La brecha entre canales alcanza los 10,30€ por conversación, evidenciando una oportunidad estratégica de automatización urgente.</div></div></div>
+    <div class="topbar-left" style="">
+      <div class="topbar-level" id="hdr-level">ROADMAP</div>
+      <div class="topbar-kpi-row"><div class="topbar-kpi" id="hdr-kpi">Próximos Pasos</div><span id="topbar-desc-toggle" style="cursor: pointer;"><span id="topbar-desc-label" style="font-family:'Host Grotesk',sans-serif;font-weight:600;font-size:9.5px;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.65);">Info</span><span id="topbar-desc-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span></span><span id="topbar-titular-toggle" class="">📰 Titular <span class="tit-chevron">▼</span></span></div>
+    <div id="topbar-desc" style="">Roadmap de proyectos en curso y planificados para mejorar el servicio Customer Success Support durante 2026. Incluye 2 proyectos de prioridad alta y 2 de prioridad media.</div><div id="topbar-titular-area" class=""><div id="topbar-titular-text"><strong>🗺️ 4 proyectos estratégicos en marcha para transformar el CS en 2026</strong><br>
+Con 2 iniciativas de <strong>prioridad alta</strong> (Agente IA Matías y Automatización con Claude) y 2 de <strong>prioridad media</strong> (Dashboard de Priorización y Comunidad de Soporte), el equipo CS tiene una hoja de ruta clara para superar los KPIs críticos actuales y escalar el servicio de forma sostenible hasta diciembre de 2026.</div></div></div>
     <div class="topbar-right">
       <div class="topbar-date">Actualizado: 04/06/2026 • 00:45</div>
       <div class="topbar-badge">Mayo 2026</div>
@@ -1118,175 +1329,63 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
 </div>
 
 <!-- === PAGE: COSTE === -->
-<div class="page" id="page-coste" style="display: block;"><div id="coste-top-unified" style="display: grid; grid-template-columns: 60px 1fr 60px 1fr; gap: 12px; margin-bottom: 16px; align-items: stretch; grid-template-rows: auto;">
-  <!-- ══ AGENTE ROW ══ -->
-  <!-- Label -->
-  <div style="background: rgb(41, 49, 56); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 8px 4px; grid-area: 1 / 1; height: 205px; align-self: stretch;">
-    <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#ED6845;text-transform:uppercase;letter-spacing:1px;">Agente</div>
+<div class="page" id="page-coste" style="display: none;"><div id="coste-top-unified" style="display: grid; grid-template-columns: 60px 1fr 60px 1fr; gap: 12px; margin-bottom: 16px; align-items: stretch; grid-template-rows: auto;">
+  <!-- AGENTE label pill -->
+  <div class="coste-label-pill" style="border-left: 3px solid #ED6845;">
+    <span style="color:#ED6845">AGENTE</span>
   </div>
 
-  <!-- Mayo Actual card -->
-  <div class="kpi-card current" data-mayo-color="orange" style="grid-area: 1 / 2; display: flex; flex-direction: column; justify-content: center; padding: 18px 24px;">
-    <div class="kpi-label">Mayo (Actual)</div>
-    <div class="kpi-val" style="font-size:36px;">11,14€</div>
-    <div class="kpi-diff diff-down" style="font-size:13px;">▼ +18,5% vs abr. &nbsp;|&nbsp; Obj. 8€ &nbsp;|&nbsp; Sector 7€</div>
-  <div class="inline-comp" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgb(238, 238, 238); display: flex; gap: 18px; align-items: flex-end; flex-wrap: wrap;">
-  <div style="display:flex;gap:16px;align-items:flex-end;">
-    <div style="text-align:center;">
-      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Objetivo</div>
-      <div style="font-size:18px;font-weight:700;color:#4caf50;">8€</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Mayo 2026</div>
-      <div style="font-size:18px;font-weight:700;color:#ED6845;">11,14€</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Sector</div>
-      <div style="font-size:18px;font-weight:700;color:#1976d2;">7€</div>
-    </div>
-  </div>
-  <div style="margin-top:6px;font-size:11px;color:#666;flex-basis:100%;">
-    vs Objetivo (8€) <span style="color:#e53935;font-weight:600;">+39%</span> &nbsp;|&nbsp; IA vs Agente <span style="font-weight:600;">0,84€</span>
-  </div></div></div>
-
-  <!-- Comparativa Agente -->
-  <div style="background: rgb(255, 255, 255); border: 1px solid rgb(229, 231, 235); border-radius: 10px; padding: 14px 20px; grid-row: 1; display: none; flex-direction: column; gap: 8px;">
-    <div class="card-title" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#ED6845;margin-bottom:4px;">▌ Comparativa Mayo 2026 — Agente</div>
-    <div style="display:flex;align-items:center;justify-content:space-around;">
-      
-    <div class="circle-wrap">
-      <div class="circle-svg-wrap">
-        <svg viewBox="0 0 68 68" width="76" height="76">
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
-        </svg>
-        <div class="circle-inner">
-          <div class="ci-label" style="font-size:8px">OBJ.</div>
-          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">8€</div>
-        </div>
+  <!-- AGENTE card -->
+  <div class="coste-mayo-card agente">
+    <div class="mc-channel">Agente</div>
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#ED6845">11,14€</div>
+    <div class="mc-diff">▼ +18,5% vs abr. | Obj. 8€ | Sector 7€</div>
+    <div class="mc-badge">🚨 COSTE ELEVADO</div>
+    <div class="coste-ci-row">
+      <div class="coste-ci-block">
+        <div class="coste-ci-label">Objetivo</div>
+        <div class="coste-ci-val" style="color:#293138">8€</div>
       </div>
-      <div class="circle-name" style="font-size:9px">Objetivo</div>
-    </div>
-      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
-      
-    <div class="circle-wrap">
-      <div class="circle-svg-wrap">
-        <svg viewBox="0 0 68 68" width="76" height="76">
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6" stroke-dasharray="4 4"></circle>
-          <circle cx="34" cy="34" r="30" fill="none" stroke="rgb(237, 104, 69)" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="52.8" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
-        </svg>
-        <div class="circle-inner">
-          <div class="ci-label" style="font-size:8px">REAL</div>
-          <div class="ci-val" style="color:#ED6845;font-size:15px;font-weight:800">11,14€</div>
-        </div>
+      <div class="coste-ci-block">
+        <div class="coste-ci-label">Mayo 2026</div>
+        <div class="coste-ci-val" style="color:#ED6845">11,14€</div>
       </div>
-      <div class="circle-name" style="font-size:9px">Mayo 2026</div>
-    </div>
-      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
-      
-    <div class="circle-wrap">
-      <div class="circle-svg-wrap">
-        <svg viewBox="0 0 68 68" width="76" height="76">
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
-        </svg>
-        <div class="circle-inner">
-          <div class="ci-label" style="font-size:8px">SECTOR</div>
-          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">7€</div>
-        </div>
+      <div class="coste-ci-block">
+        <div class="coste-ci-label">Sector</div>
+        <div class="coste-ci-val" style="color:#293138">7€</div>
       </div>
-      <div class="circle-name" style="font-size:9px">Prom. Sector</div>
     </div>
-    </div>
-    <div style="display:flex;gap:16px;font-size:11px;color:#293138;padding-top:4px;border-top:1px solid #f0f0f0;">
-      <span>vs Objetivo (8€) <strong style="color:#ED6845;">+39%</strong></span>
-      <span>IA vs Agente <strong style="color:#4caf50;">0,84€</strong></span>
-    </div>
+    <div class="coste-footnote">vs Objetivo (8€) <span style="color:#e53935;font-weight:700">+39%</span> | IA vs Agente <span style="color:#4caf50;font-weight:600">0,84€</span></div>
   </div>
 
-  <!-- ══ IA ROW ══ -->
-  <!-- Label -->
-  <div style="background: rgb(41, 49, 56); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 8px 4px; grid-area: 1 / 3; margin-top: 6px; height: 206px; align-self: stretch;">
-    <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</div>
+  <!-- IA label pill -->
+  <div class="coste-label-pill" style="border-left: 3px solid #4caf50;">
+    <span style="color:#4caf50">IA</span>
   </div>
 
-  <!-- Mayo Actual IA card -->
-  <div class="kpi-card current" data-mayo-color="green" style="grid-area: 1 / 4; margin-top: 6px; border-color: rgb(76, 175, 80); display: flex; flex-direction: column; justify-content: center; padding: 18px 24px;">
-    <div class="kpi-label">Mayo (Actual)</div>
-    <div class="kpi-val" style="font-size:36px;">0,84€</div>
-    <div class="kpi-diff diff-up" style="font-size:13px;">▲ −23,6% vs abr. &nbsp;|&nbsp; Obj. 1€ &nbsp;|&nbsp; Sector 1,05€</div>
-  <div class="inline-comp" style="margin-top: 12px; padding-top: 10px; border-top: 1px solid rgb(238, 238, 238); display: flex; gap: 18px; align-items: flex-end; flex-wrap: wrap;">
-  <div style="display:flex;gap:16px;align-items:flex-end;">
-    <div style="text-align:center;">
-      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Objetivo</div>
-      <div style="font-size:18px;font-weight:700;color:#4caf50;">1€</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Mayo 2026</div>
-      <div style="font-size:18px;font-weight:700;color:#4caf50;">0,84€</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Sector</div>
-      <div style="font-size:18px;font-weight:700;color:#1976d2;">1,05€</div>
-    </div>
-  </div>
-  <div style="margin-top:6px;font-size:11px;color:#666;flex-basis:100%;">
-    vs Objetivo IA (1€) <span style="color:#4caf50;font-weight:600;">−16% ✓</span> &nbsp;|&nbsp; IA vs Sector (1,05€) <span style="color:#4caf50;font-weight:600;">−20% ✓</span>
-  </div></div></div>
-
-  <!-- Comparativa IA -->
-  <div style="background: rgb(255, 255, 255); border: 1px solid rgb(229, 231, 235); border-radius: 10px; padding: 14px 20px; grid-row: 2; margin-top: 6px; display: none; flex-direction: column; gap: 8px;">
-    <div class="card-title" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#4caf50;margin-bottom:4px;">▌ Comparativa IA Mayo 2026</div>
-    <div style="display:flex;align-items:center;justify-content:space-around;">
-      
-    <div class="circle-wrap">
-      <div class="circle-svg-wrap">
-        <svg viewBox="0 0 68 68" width="76" height="76">
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
-        </svg>
-        <div class="circle-inner">
-          <div class="ci-label" style="font-size:8px">OBJ.</div>
-          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">1€</div>
-        </div>
+  <!-- IA card -->
+  <div class="coste-mayo-card ia">
+    <div class="mc-channel" style="background:#e8f5e9;color:#2e7d32">IA (Bot)</div>
+    <div class="mc-label">Mayo (Actual)</div>
+    <div class="mc-val" style="color:#4caf50">0,84€</div>
+    <div class="mc-diff">▲ −23,6% vs abr. | Obj. 1€ | Sector 1,05€</div>
+    <div class="mc-badge" style="background:#e8f5e9;color:#2e7d32">✅ BAJO OBJETIVO</div>
+    <div class="coste-ci-row">
+      <div class="coste-ci-block">
+        <div class="coste-ci-label">Objetivo</div>
+        <div class="coste-ci-val" style="color:#293138">1€</div>
       </div>
-      <div class="circle-name" style="font-size:9px">Objetivo</div>
-    </div>
-      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
-      
-    <div class="circle-wrap">
-      <div class="circle-svg-wrap">
-        <svg viewBox="0 0 68 68" width="76" height="76">
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6" stroke-dasharray="4 4"></circle>
-          <circle cx="34" cy="34" r="30" fill="none" stroke="rgb(76, 175, 80)" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
-        </svg>
-        <div class="circle-inner">
-          <div class="ci-label" style="font-size:8px">REAL</div>
-          <div class="ci-val" style="color:#4caf50;font-size:15px;font-weight:800">0,84€</div>
-        </div>
+      <div class="coste-ci-block">
+        <div class="coste-ci-label">Mayo 2026</div>
+        <div class="coste-ci-val" style="color:#4caf50">0,84€</div>
       </div>
-      <div class="circle-name" style="font-size:9px">Mayo 2026</div>
-    </div>
-      <div class="circle-connector" style="font-size:18px;color:#b0b8c5;">—</div>
-      
-    <div class="circle-wrap">
-      <div class="circle-svg-wrap">
-        <svg viewBox="0 0 68 68" width="76" height="76">
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#e5e7eb" stroke-width="6"></circle>
-          <circle cx="34" cy="34" r="30" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="188.5" stroke-dashoffset="0.0" stroke-linecap="round" transform="rotate(-90 34 34)"></circle>
-        </svg>
-        <div class="circle-inner">
-          <div class="ci-label" style="font-size:8px">SECTOR</div>
-          <div class="ci-val" style="color:#1D1D1B;font-size:15px;font-weight:800">1,05€</div>
-        </div>
+      <div class="coste-ci-block">
+        <div class="coste-ci-label">Sector</div>
+        <div class="coste-ci-val" style="color:#293138">1,05€</div>
       </div>
-      <div class="circle-name" style="font-size:9px">Prom. Sector</div>
     </div>
-    </div>
-    <div style="display:flex;gap:16px;font-size:11px;color:#293138;padding-top:4px;border-top:1px solid #f0f0f0;">
-      <span>vs Objetivo IA (1€) <strong style="color:#4caf50;">−16% ✓</strong></span>
-      <span>IA vs Sector (1,05€) <strong style="color:#4caf50;">−20% ✓</strong></span>
-    </div>
+    <div class="coste-footnote">vs Objetivo IA (1€) <span style="color:#4caf50;font-weight:700">−16% ✓</span> | IA vs Sector (1,05€) <span style="color:#4caf50;font-weight:700">−20% ✓</span></div>
   </div>
 </div>
   
@@ -1316,9 +1415,9 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
   </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">🚨 Alerta</span><span class="tips-summary-badge s-green">💡 Oportunidad</span><span class="tips-summary-badge s-orange">🎯 Acción</span></div>
       </div>
-      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+      <div class="tips-chevron" style="transform: rotate(0deg);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
     </div>
-    <div class="tips-body" style="max-height: 0px; padding: 0px;">
+    <div class="tips-body" style="max-height: 0px; padding: 0px; overflow: hidden;">
       <div class="tips-grid">
       <div class="tip-alert-card tip-red">
     <span class="tip-badge"><span class="tip-badge-icon">🚨</span>ALERTA CRÍTICA</span>
@@ -1513,9 +1612,9 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     <span class="tips-info-badge-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
   </span><div class="tips-summary-badges"><span class="tips-summary-badge s-red">📉 Alerta</span><span class="tips-summary-badge s-orange">🏁 Oportunidad</span><span class="tips-summary-badge s-blue">💬 Info</span></div>
       </div>
-      <div class="tips-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+      <div class="tips-chevron" style="transform: rotate(0deg);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
     </div>
-    <div class="tips-body" style="max-height: 0px; padding: 0px;">
+    <div class="tips-body" style="max-height: 0px; padding: 0px; overflow: hidden;">
       <div class="tips-grid">
       <div class="tip-alert-card tip-red">
     <span class="tip-badge"><span class="tip-badge-icon">📉</span>ALERTA</span>
@@ -1638,7 +1737,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="csat-mayo-card agente">
     <div class="mc-channel">Agente</div>
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val">93,1%</div>
+    <div class="mc-val" style="color: rgb(76, 175, 80);">93,1%</div>
     <div class="mc-diff">▼ −0,9pp vs abr. &nbsp;|&nbsp; Obj. 95%</div>
     <div class="mc-diff" style="margin-top:2px;">Sector 85% &nbsp;|&nbsp; <strong style="color:#4caf50;">+8,1pp vs sector</strong></div>
     <div class="mc-badge">🏆 PROMOTOR</div>
@@ -1650,7 +1749,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div>
-      <div style="font-size:16px;font-weight:700;color:#ED6845;">93,1%</div>
+      <div style="font-size: 16px; font-weight: 700; color: rgb(76, 175, 80);">93,1%</div>
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div>
@@ -1664,7 +1763,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="csat-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</span></div><div class="csat-mayo-card ia">
     <div class="mc-channel" style="background:#e3f2fd;color:#1976d2;">IA (Bot)</div>
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color:#ff9800;">72,0%</div>
+    <div class="mc-val" style="color: rgb(76, 175, 80);">72,0%</div>
     <div class="mc-diff">▼ −1,0pp vs abr. &nbsp;|&nbsp; Obj. 80%</div>
     <div class="mc-diff" style="margin-top:2px;">Sector 72% &nbsp;|&nbsp; <strong style="color:#ff9800;">En línea sector</strong></div>
     <div class="mc-badge" style="background:#fff3e0;color:#e65100;">⚠️ PASIVOS</div>
@@ -1680,7 +1779,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector IA</div>
-      <div style="font-size:16px;font-weight:700;color:#3b82f6;">72%</div>
+      <div style="font-size: 16px; font-weight: 700; color: rgb(76, 175, 80);">72%</div>
     </div>
   </div>
   <div style="font-size:11px;color:#293138;">vs Objetivo (80%) <span style="color:#ED6845;font-weight:700;">−8pp</span> &nbsp;|&nbsp; vs Sector IA (72%) <span style="color:#293138;font-weight:700;">En línea</span></div>
@@ -1733,7 +1832,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="35" cy="35" r="28" fill="none" stroke="#fff3e0" stroke-width="6"></circle>
           <circle cx="35" cy="35" r="28" fill="none" stroke="#ff9800" stroke-width="6" stroke-dasharray="133.35432495957954 42.57486364144888" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 35 35)"></circle>
         </svg>
-        <div class="csat-ci-val" style="color:#ff9800;">72%</div>
+        <div class="csat-ci-val" style="color: rgb(76, 175, 80);">72%</div>
         <div class="csat-ci-label" style="margin-top:14px;">IA BOT</div>
       </div>
       <div class="csat-ci-block">
@@ -1741,7 +1840,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="35" cy="35" r="28" fill="none" stroke="#e8f5e9" stroke-width="6"></circle>
           <circle cx="35" cy="35" r="28" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="175.92918860102841" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 35 35)"></circle>
         </svg>
-        <div class="csat-ci-val" style="color:#1D1D1B;">72%</div>
+        <div class="csat-ci-val" style="color: rgb(76, 175, 80);">72%</div>
         <div class="csat-ci-label" style="margin-top:14px;">SECTOR IA</div>
       </div>
     </div>
@@ -1757,11 +1856,11 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     <div class="calidad-chart-card" style="padding: 14px 18px; height: auto;">
       <div style="font-size:11px;font-weight:700;color:#ED6845;margin-bottom:8px;">▌ EVOLUCIÓN CSAT — AGENTE HUMANO</div>
       
-    <div class="chart-wrap" style="position: relative; height: 200px;"><canvas id="chart-csat-agente" style="display: block; box-sizing: border-box; width: 766px; height: 222px;" width="766" height="222"></canvas></div></div>
+    <div class="chart-wrap" style="position: relative; height: 200px;"><canvas id="chart-csat-agente" style="display: block; box-sizing: border-box; width: 766px; height: 200px;" width="766" height="200"></canvas></div></div>
     <div class="calidad-chart-card" style="padding: 14px 18px; height: auto;">
       <div style="font-size:11px;font-weight:700;color:#4caf50;margin-bottom:8px;">▌ EVOLUCIÓN CSAT — IA (BOT)</div>
       
-    <div class="chart-wrap" style="position: relative; height: 200px;"><canvas id="chart-csat-ia" style="display: block; box-sizing: border-box; width: 766px; height: 222px;" width="766" height="222"></canvas></div></div>
+    <div class="chart-wrap" style="position: relative; height: 200px;"><canvas id="chart-csat-ia" style="display: block; box-sizing: border-box; width: 766px; height: 200px;" width="766" height="200"></canvas></div></div>
   </div>
 </div>
 
@@ -1849,7 +1948,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   </div>
 </div><div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</span></div><div class="calidad-mayo-card" style="border-left: 3px solid rgb(76, 175, 80);">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" id="calidad-mayo-val" style="color: rgb(76, 175, 80);">7,0</div>
+    <div class="mc-val" id="calidad-mayo-val" style="color: rgb(237, 104, 69);">7,0</div>
     <div class="mc-diff">▲ +0,3 vs abr.  |  Obj. 8  |  Sector 7,5</div>
     <div style="margin-top: 6px; padding: 6px 10px; background: rgb(232, 245, 233); border-radius: 6px; font-size: 11px;">
   <span style="color:#4caf50;font-weight:700;">Distribución IA</span><br>
@@ -1864,7 +1963,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div>
-      <div style="font-size:16px;font-weight:700;color:#4caf50;">7,0</div>
+      <div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">7,0</div>
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div>
@@ -1894,7 +1993,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="175.92918860102841 25.132741228718345" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
         <div style="margin-top:-60px;text-align:center;">
-          <div class="ci-val" style="color:#ff9800;">7</div>
+          <div class="ci-val" style="color: rgb(237, 104, 69);">7</div>
           <div class="ci-label">IA · MAYO</div>
         </div>
         <div style="margin-top:40px;"></div>
@@ -1992,7 +2091,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
       </div>
       <div style="text-align:center;">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div>
-        <div style="font-size:16px;font-weight:700;color:#3b82f6;">40s</div>
+        <div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">40s</div>
       </div>
     </div>
     <div style="font-size:11px;color:#293138;">vs Objetivo (&lt;30s) <span style="color:#ED6845;font-weight:700;">+10s</span> &nbsp;|&nbsp; vs Sector (40s) <span style="color:#293138;font-weight:700;">En línea</span></div>
@@ -2000,7 +2099,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
 </div><div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</span></div>
   <div class="calidad-mayo-card">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color: rgb(76, 175, 80);">37s</div>
+    <div class="mc-val" style="color: rgb(237, 104, 69);">37s</div>
     <div class="mc-diff">▲ −5s vs abr. &nbsp;|&nbsp; Obj. &lt;30s &nbsp;|&nbsp; Sector 45s</div>
     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
       <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Rendimiento canal IA</div>
@@ -2020,7 +2119,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div>
-      <div style="font-size:16px;font-weight:700;color:#4caf50;">37s</div>
+      <div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">37s</div>
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div>
@@ -2046,7 +2145,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="162.8601631620949 38.20176666765188" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">37s</div><div class="ci-label">IA · MAYO</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(237, 104, 69);">37s</div><div class="ci-label">IA · MAYO</div></div>
         <div style="margin-top:40px;"></div>
       </div>
       <div class="ci-sep"></div>
@@ -2193,7 +2292,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ffebee" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#f44336" stroke-width="7" stroke-dasharray="74.3929140370063 126.66901579274045" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#f44336;">1,6m</div><div class="ci-label">AGENTE</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(237, 104, 69);">1,6m</div><div class="ci-label">AGENTE</div></div>
         <div style="margin-top:40px;"></div>
       </div>
     </div>
@@ -2259,7 +2358,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#ED6845;text-transform:uppercase;letter-spacing:1px;">Agente</span></div>
   <div class="calidad-mayo-card" style="border-left: 3px solid rgb(237, 104, 69);">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color:#ED6845;">44m</div>
+    <div class="mc-val" style="color: rgb(229, 57, 53);">44m</div>
     <div class="mc-diff">▲ +16m vs IA  |  Obj. &lt;20m  |  Sector 25m</div>
     <div style="margin-top:6px;padding:6px 10px;background:#fff3e0;border-radius:6px;font-size:11px;"><span style="color:#ED6845;font-weight:700;">Distribución Agente</span><br><span style="color:#6b7280;">Crítico (&gt;35m)</span>&nbsp;<span style="font-weight:700;color:#ED6845;">57,8%</span></div>
     <div class="inline-comp" style="margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;">
@@ -2270,7 +2369,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
       </div>
       <div style="text-align:center;">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div>
-        <div style="font-size:16px;font-weight:700;color:#ED6845;">44m</div>
+        <div style="font-size: 16px; font-weight: 700; color: rgb(229, 57, 53);">44m</div>
       </div>
       <div style="text-align:center;">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div>
@@ -2281,7 +2380,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   </div>
   </div><div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</span></div><div class="calidad-mayo-card" style="border-left: 3px solid rgb(76, 175, 80);">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color: rgb(76, 175, 80);">28m</div>
+    <div class="mc-val" style="color: rgb(237, 104, 69);">28m</div>
     <div class="mc-diff">▼ −16m vs Agente  |  Obj. &lt;20m  |  Sector 25m</div>
     <div style="margin-top: 6px; padding: 6px 10px; background: rgb(232, 245, 233); border-radius: 6px; font-size: 11px;"><span style="color:#4caf50;font-weight:700;">Distribución IA</span><br><span style="color:#6b7280;">En crítico (&gt;35m)</span>&nbsp;<span style="font-weight:700;color:#ED6845;">18,1%</span></div>
   <div class="inline-comp" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgb(240, 240, 240);">
@@ -2292,7 +2391,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
       </div>
       <div style="text-align:center;">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div>
-        <div style="font-size: 16px; font-weight: 700; color: rgb(76, 175, 80);">28m</div>
+        <div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">28m</div>
       </div>
       <div style="text-align:center;">
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div>
@@ -2318,7 +2417,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ffebee" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#f44336" stroke-width="7" stroke-dasharray="90.47786842338604 110.58406140636073" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#f44336;">44m</div><div class="ci-label">AGENTE</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(229, 57, 53);">44m</div><div class="ci-label">AGENTE</div></div>
         <div style="margin-top:40px;"></div>
       </div>
       <div class="ci-sep"></div>
@@ -2387,22 +2486,22 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
 <div class="page" id="page-sentimiento" style="display: none;">
 <div class="calidad-top" style="grid-template-columns: 60px 1fr 60px 1fr;">
   <div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#ED6845;text-transform:uppercase;letter-spacing:1px;">Agente</span></div>
-  <div class="calidad-mayo-card" style="border-left: 3px solid rgb(237, 104, 69);"><div class="mc-label">Mayo (Actual)</div><div class="mc-val" style="color:#ED6845;">4,0</div><div class="mc-diff">▼ −0,1 vs abr.  |  Obj. &gt;7  |  Sector 5,5</div><div style="margin-top:6px;padding:6px 10px;background:#fff3e0;border-radius:6px;font-size:11px;"><span style="color:#ED6845;font-weight:700;">Distribución Agente</span><br><span style="color:#6b7280;">Crítico (&lt;3)</span>&nbsp;<span style="font-weight:700;color:#ED6845;">52,9%</span><br><small style="color:#6b7280;">Excelente(7-10) 20,3% | Bueno(5-7) 6,6% | Mejorable(3-5) 20,2%</small></div><div class="inline-comp" style="margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;">
+  <div class="calidad-mayo-card" style="border-left: 3px solid rgb(237, 104, 69);"><div class="mc-label">Mayo (Actual)</div><div class="mc-val" style="color: rgb(229, 57, 53);">4,0</div><div class="mc-diff">▼ −0,1 vs abr.  |  Obj. &gt;7  |  Sector 5,5</div><div style="margin-top:6px;padding:6px 10px;background:#fff3e0;border-radius:6px;font-size:11px;"><span style="color:#ED6845;font-weight:700;">Distribución Agente</span><br><span style="color:#6b7280;">Crítico (&lt;3)</span>&nbsp;<span style="font-weight:700;color:#ED6845;">52,9%</span><br><small style="color:#6b7280;">Excelente(7-10) 20,3% | Bueno(5-7) 6,6% | Mejorable(3-5) 20,2%</small></div><div class="inline-comp" style="margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;">
     <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:4px;">
       <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Objetivo</div><div style="font-size:16px;font-weight:700;color:#4caf50;">&gt;7</div></div>
-      <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div><div style="font-size:16px;font-weight:700;color:#ED6845;">4,0</div></div>
+      <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div><div style="font-size: 16px; font-weight: 700; color: rgb(229, 57, 53);">4,0</div></div>
       <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div><div style="font-size:16px;font-weight:700;color:#3b82f6;">5,5</div></div>
     </div>
     <div style="font-size:11px;color:#293138;">vs Objetivo (&gt;7) <span style="color:#ED6845;font-weight:700;">57,1%</span> &nbsp;|&nbsp; Crítico &lt;3: <span style="color:#ED6845;font-weight:700;">52,9%</span></div>
   </div></div><div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#4caf50;text-transform:uppercase;letter-spacing:1px;">IA</span></div><div class="calidad-mayo-card" style="border-left: 3px solid rgb(76, 175, 80);">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color: rgb(76, 175, 80);">4,0</div>
+    <div class="mc-val" style="color: rgb(229, 57, 53);">4,0</div>
     <div class="mc-diff">▼ −0,1 vs abr.  |  Obj. &gt;7  |  Sector 5,5</div>
     <div style="margin-top: 6px; padding: 6px 10px; background: rgb(232, 245, 233); border-radius: 6px; font-size: 11px;"><span style="color:#4caf50;font-weight:700;">Distribución IA</span><br><span style="color:#6b7280;">En rango óptimo (&gt;7)</span>&nbsp;<span style="font-weight:700;color:#ED6845;">N/D</span></div>
   <div class="inline-comp" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgb(240, 240, 240);">
     <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:4px;">
       <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Objetivo</div><div style="font-size:16px;font-weight:700;color:#4caf50;">&gt;7</div></div>
-      <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div><div style="font-size: 16px; font-weight: 700; color: rgb(76, 175, 80);">4,0</div></div>
+      <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div><div style="font-size: 16px; font-weight: 700; color: rgb(229, 57, 53);">4,0</div></div>
       <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div><div style="font-size:16px;font-weight:700;color:#3b82f6;">5,5</div></div>
     </div>
     <div style="font-size:11px;color:#293138;">vs Objetivo (&gt;7) <span style="color:#ED6845;font-weight:700;">57,1%</span></div>
@@ -2424,7 +2523,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="114.60530000295564 86.4566298267911" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">4,0</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(229, 57, 53);">4,0</div><div class="ci-label">MAYO 2026</div></div>
         <div style="margin-top:40px;"></div>
       </div>
       <div class="ci-sep"></div>
@@ -2493,10 +2592,10 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
 <div class="page" id="page-frustracion" style="display: none;">
 <div class="calidad-top" style="grid-template-columns: 60px 1fr 60px 1fr;">
   <div class="calidad-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#ED6845;text-transform:uppercase;letter-spacing:1px;">Agente</span></div>
-  <div class="calidad-mayo-card" style="border-left: 3px solid rgb(237, 104, 69);"><div class="mc-label">Mayo (Actual)</div><div class="mc-val" style="color:#ED6845;">2,0</div><div class="mc-diff">▲ −0,2 vs abr.  |  Obj. &lt;3  |  Sector 4</div><div style="margin-top:6px;padding:6px 10px;background:#fff3e0;border-radius:6px;font-size:11px;"><span style="color:#ED6845;font-weight:700;">Distribución Agente</span><br><span style="color:#6b7280;">En rango óptimo</span>&nbsp;<span style="font-weight:700;color:#4caf50;">89,5%</span><br><small style="color:#6b7280;">Crítico: 10,5%</small></div><div class="inline-comp" style="margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;">
+  <div class="calidad-mayo-card" style="border-left: 3px solid rgb(237, 104, 69);"><div class="mc-label">Mayo (Actual)</div><div class="mc-val" style="color: rgb(76, 175, 80);">2,0</div><div class="mc-diff">▲ −0,2 vs abr.  |  Obj. &lt;3  |  Sector 4</div><div style="margin-top:6px;padding:6px 10px;background:#fff3e0;border-radius:6px;font-size:11px;"><span style="color:#ED6845;font-weight:700;">Distribución Agente</span><br><span style="color:#6b7280;">En rango óptimo</span>&nbsp;<span style="font-weight:700;color:#4caf50;">89,5%</span><br><small style="color:#6b7280;">Crítico: 10,5%</small></div><div class="inline-comp" style="margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;">
     <div style="display:flex;align-items:flex-end;gap:16px;margin-bottom:4px;">
       <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Objetivo</div><div style="font-size:16px;font-weight:700;color:#4caf50;">&lt;3</div></div>
-      <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div><div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">2,0</div></div>
+      <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Mayo 2026</div><div style="font-size: 16px; font-weight: 700; color: rgb(76, 175, 80);">2,0</div></div>
       <div style="text-align:center;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;letter-spacing:0.5px;">Sector</div><div style="font-size:16px;font-weight:700;color:#3b82f6;">4</div></div>
     </div>
     <div style="font-size:11px;color:#293138;">vs Objetivo (&lt;3) <span style="color:#4caf50;font-weight:700;">✓ En objetivo</span> &nbsp;|&nbsp; Agente crítico: <span style="color:#ED6845;font-weight:700;">10,5%</span></div>
@@ -2601,7 +2700,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="calidad-label-pill"><span>Retención IA</span></div>
   <div class="calidad-mayo-card">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color:#ff9800;">49,9%</div>
+    <div class="mc-val" style="color: rgb(237, 104, 69);">49,9%</div>
     <div class="mc-diff">▼ −2,1pp vs abr. &nbsp;|&nbsp; Obj. 80% &nbsp;|&nbsp; Sector 65%</div>
     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
       <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Benchmarks Retención IA</div>
@@ -2623,7 +2722,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
         </div>
         <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;">
           <div style="font-size:10px;color:#888;font-weight:600;">Mayo 2026</div>
-          <div style="font-size:16px;font-weight:700;color:#ff9800;">49,9%</div>
+          <div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">49,9%</div>
           <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">CRÍTICO</div>
         </div>
       </div>
@@ -2631,7 +2730,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="inline-comp-ret" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 11px;">
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:4px;">
       <span><strong style="color:#aaa">OBJETIVO</strong> <strong style="color:#fff">80%</strong></span>
-      <span><strong style="color:#aaa">MAYO 2026</strong> <strong style="color: rgb(76, 175, 80);">49,9%</strong></span>
+      <span><strong style="color:#aaa">MAYO 2026</strong> <strong style="color: rgb(237, 104, 69);">49,9%</strong></span>
       <span><strong style="color:#aaa">SECTOR</strong> <strong style="color:#fff">65%</strong></span>
     </div>
     <div style="font-size:10.5px;color:#aaa;margin-top:2px;">
@@ -2655,7 +2754,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="125.46264421376198 75.59928561598478" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">49,9%</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(237, 104, 69);">49,9%</div><div class="ci-label">MAYO 2026</div></div>
         <div style="margin-top:40px;"></div>
       </div>
       <div class="ci-sep"></div>
@@ -2720,14 +2819,14 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="calidad-label-pill"><span>Deflección IA</span></div>
   <div class="calidad-mayo-card">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color:#ff9800;">42,7%</div>
+    <div class="mc-val" style="color: rgb(237, 104, 69);">42,7%</div>
     <div class="mc-diff">▼ −1,3pp vs abr. &nbsp;|&nbsp; Obj. 70% &nbsp;|&nbsp; Sector 55%</div>
     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
       <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Impacto económico</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
         <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
           <div style="font-size:10px;color:#888;font-weight:600;">Deflección actual</div>
-          <div style="font-size:16px;font-weight:700;color:#ff9800;">42,7%</div>
+          <div style="font-size: 16px; font-weight: 700; color: rgb(237, 104, 69);">42,7%</div>
           <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">ACTUAL</div>
         </div>
         <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
@@ -2750,7 +2849,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="inline-comp-def" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 11px;">
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:4px;">
       <span><strong style="color:#aaa">OBJETIVO</strong> <strong style="color:#fff">70%</strong></span>
-      <span><strong style="color:#aaa">MAYO 2026</strong> <strong style="color: rgb(76, 175, 80);">42,7%</strong></span>
+      <span><strong style="color:#aaa">MAYO 2026</strong> <strong style="color: rgb(237, 104, 69);">42,7%</strong></span>
       <span><strong style="color:#aaa">SECTOR</strong> <strong style="color:#fff">55%</strong></span>
     </div>
     <div style="font-size:10.5px;color:#aaa;margin-top:2px;">
@@ -2774,7 +2873,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="122.64777719614553 78.41415263360123" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">42,7%</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(237, 104, 69);">42,7%</div><div class="ci-label">MAYO 2026</div></div>
         <div style="margin-top:40px;"></div>
       </div>
       <div class="ci-sep"></div>
@@ -2839,7 +2938,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="calidad-label-pill"><span>Abandono IA</span></div>
   <div class="calidad-mayo-card">
     <div class="mc-label">Mayo (Actual)</div>
-    <div class="mc-val" style="color:#ff9800;">9,9%</div>
+    <div class="mc-val" style="color: rgb(229, 57, 53);">9,9%</div>
     <div class="mc-diff">▲ −0,4pp vs abr. &nbsp;|&nbsp; Obj. &lt;5% &nbsp;|&nbsp; Sector 12%</div>
     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;">
       <div style="font-size:10px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Benchmarks Abandono IA</div>
@@ -2851,7 +2950,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
         </div>
         <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;">
           <div style="font-size:10px;color:#888;font-weight:600;">Mayo 2026</div>
-          <div style="font-size:16px;font-weight:700;color:#ff9800;">9,9%</div>
+          <div style="font-size: 16px; font-weight: 700; color: rgb(229, 57, 53);">9,9%</div>
           <div style="font-size:9px;background:#fff3e0;border-radius:3px;padding:1px 4px;display:inline-block;margin-top:2px;color:#ff9800;">BUENO</div>
         </div>
         <div style="background:#f8f9fa;border-radius:6px;padding:8px 10px;">
@@ -2869,7 +2968,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   <div class="inline-comp-aba" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 11px;">
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:4px;">
       <span><strong style="color:#aaa">OBJETIVO</strong> <strong style="color:#fff">&lt;5%</strong></span>
-      <span><strong style="color:#aaa">MAYO 2026</strong> <strong style="color: rgb(76, 175, 80);">9,9%</strong></span>
+      <span><strong style="color:#aaa">MAYO 2026</strong> <strong style="color: rgb(229, 57, 53);">9,9%</strong></span>
       <span><strong style="color:#aaa">SECTOR</strong> <strong style="color:#fff">12%</strong></span>
     </div>
     <div style="font-size:10.5px;color:#aaa;margin-top:2px;">
@@ -2893,7 +2992,7 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
           <circle cx="40" cy="40" r="32" fill="none" stroke="#fff3e0" stroke-width="7"></circle>
           <circle cx="40" cy="40" r="32" fill="none" stroke="#ff9800" stroke-width="7" stroke-dasharray="101.53627456402211 99.52565526572465" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"></circle>
         </svg>
-        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color:#ff9800;">9,9%</div><div class="ci-label">MAYO 2026</div></div>
+        <div style="margin-top:-60px;text-align:center;"><div class="ci-val" style="color: rgb(229, 57, 53);">9,9%</div><div class="ci-label">MAYO 2026</div></div>
         <div style="margin-top:40px;"></div>
       </div>
       <div class="ci-sep"></div>
@@ -2952,7 +3051,1135 @@ El agente humano registra en mayo un coste de <strong>11,14€/ticket</strong>, 
   </div>
 </div>
 
-  </div><!-- end content -->
+  <div id="page-conclusion" class="page" style="display: none;">
+<style>
+  #page-conclusion {
+    background: #f4f6f9;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  /* ---- HERO BANNER ---- */
+  .concl-hero {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 60%, #162035 100%);
+    border-radius: 14px;
+    padding: 32px 36px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .concl-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(167,139,250,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .concl-hero-score {
+    flex-shrink: 0;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 4px solid rgba(167,139,250,0.6);
+    background: radial-gradient(circle at center, rgba(167,139,250,0.25) 0%, rgba(26,42,58,0.5) 70%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(167,139,250,0.4);
+  }
+  .concl-hero-score .score-num {
+    font-size: 38px; font-weight: 800; color: #fff; line-height: 1;
+  }
+  .concl-hero-score .score-label {
+    font-size: 9px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px;
+  }
+  .concl-hero-text h2 {
+    font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 6px; line-height: 1.25;
+  }
+  .concl-hero-text .hero-sub {
+    font-size: 13px; color: rgba(255,255,255,0.6); margin: 0 0 14px;
+  }
+  .concl-hero-badges {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .hero-badge {
+    padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .hero-badge.red   { background: rgba(239,68,68,0.2);  color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+  .hero-badge.amber { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
+  .hero-badge.green { background: rgba(76,175,80,0.2);  color: #4caf50; border: 1px solid rgba(76,175,80,0.4); }
+  .hero-badge.purple{ background: rgba(167,139,250,0.2);color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+
+  /* ---- RADAR / CENTRAL DIAGRAM ---- */
+  .concl-diagram-wrap {
+    display: grid;
+    grid-template-columns: 1fr 220px 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .concl-left-cards, .concl-right-cards {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .kpi-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid;
+    transition: box-shadow .2s;
+    position: relative;
+  }
+  .kpi-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.12); }
+  .kpi-card.status-ok    { border-color: #4caf50; }
+  .kpi-card.status-warn  { border-color: #fbbf24; }
+  .kpi-card.status-bad   { border-color: #ef4444; }
+  .kpi-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .kpi-card.status-ok   .kpi-icon { background: rgba(76,175,80,0.12); }
+  .kpi-card.status-warn .kpi-icon { background: rgba(251,191,36,0.12); }
+  .kpi-card.status-bad  .kpi-icon { background: rgba(239,68,68,0.12); }
+  .kpi-info { flex: 1; min-width: 0; }
+  .kpi-info .kpi-name { font-size: 11px; font-weight: 700; color: #4a5a6a; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+  .kpi-info .kpi-vals { font-size: 12px; color: #293138; }
+  .kpi-info .kpi-vals span { font-weight: 700; }
+  .kpi-badge {
+    font-size: 16px; flex-shrink: 0;
+  }
+  /* Connector lines left */
+  .concl-left-cards .kpi-card::after {
+    content: '';
+    position: absolute; right: -22px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 2px;
+    background: linear-gradient(to right, rgba(167,139,250,0.4), rgba(167,139,250,0.1));
+  }
+  .concl-right-cards .kpi-card::before {
+    content: '';
+    position: absolute; left: -22px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 2px;
+    background: linear-gradient(to left, rgba(167,139,250,0.4), rgba(167,139,250,0.1));
+  }
+
+  /* ---- CENTER NODE ---- */
+  .concl-center-node {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .center-ring {
+    width: 200px; height: 200px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .center-ring svg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+  }
+  .center-ring-inner {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: 0 0 40px rgba(167,139,250,0.35), 0 0 80px rgba(167,139,250,0.15);
+    z-index: 2; position: relative;
+    text-align: center; padding: 16px;
+  }
+  .center-ring-inner .center-icon { font-size: 32px; margin-bottom: 6px; }
+  .center-ring-inner .center-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1.5px; }
+  .center-ring-inner .center-status { font-size: 15px; font-weight: 800; color: #fbbf24; margin-top: 2px; }
+  .concl-center-node .center-caption {
+    font-size: 10px; color: #4a5a6a; text-align: center; text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ---- BOTTOM GRID ---- */
+  .concl-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .insight-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .insight-card h4 {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #4a5a6a; margin: 0 0 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .insight-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; }
+  .insight-list li {
+    font-size: 12px; color: #293138; display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
+  }
+  .insight-list li .il-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+  
+  /* Gauge bars */
+  .gauge-wrap { margin-bottom: 10px; }
+  .gauge-label { display: flex; justify-content: space-between; font-size: 11px; color: #4a5a6a; margin-bottom: 4px; }
+  .gauge-label span:last-child { font-weight: 700; color: #293138; }
+  .gauge-bar { height: 6px; border-radius: 4px; background: #e8ecf0; overflow: hidden; }
+  .gauge-fill { height: 100%; border-radius: 4px; transition: width .8s ease; }
+
+  /* ---- VERDICT BANNER ---- */
+  .verdict-banner {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
+    border-radius: 14px;
+    padding: 22px 28px;
+    display: flex; align-items: center; gap: 24px;
+    border-left: 5px solid #fbbf24;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+  .verdict-banner .vb-icon { font-size: 40px; flex-shrink: 0; }
+  .verdict-banner h3 { font-size: 15px; font-weight: 800; color: #fff; margin: 0 0 6px; }
+  .verdict-banner p  { font-size: 12.5px; color: rgba(255,255,255,0.7); margin: 0; line-height: 1.5; }
+</style>
+
+<div class="page-content" style="padding:24px 28px; max-width:1100px;">
+
+  <!-- HERO -->
+  <div class="concl-hero">
+    <div class="concl-hero-score">
+    <div class="score-num" style="font-size:32px">5,8</div>
+    <div class="score-label">Score Global</div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:2px">Ag: 5,3 · IA: 6,2</div>
+  </div>
+    <div class="concl-hero-text">
+      <h2>Estado del Servicio CS — Mayo 2026</h2>
+      <p class="hero-sub">Análisis global de los 13 KPIs del servicio Customer Success Support</p>
+      <div class="concl-hero-badges">
+        <span class="hero-badge red">🚨 3 KPIs críticos</span>
+        <span class="hero-badge amber">⚠️ 7 KPIs en mejora</span>
+        <span class="hero-badge green">✅ 3 KPIs en objetivo</span>
+        <span class="hero-badge purple">📅 Mayo 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM CENTRAL -->
+  <div class="concl-diagram-wrap">
+    <!-- LEFT KPIs -->
+    <div class="concl-left-cards">
+      <div class="kpi-card status-bad">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Coste por Ticket</div>
+    <div class="kpi-vals">Agente <span style="color:#ED6845;font-weight:700">11,14€</span> · IA <span style="color:#4caf50;font-weight:700">0,84€</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-warn">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Tasa Resolución</div>
+    <div class="kpi-vals">Agente <span style="color:#ED6845;font-weight:700">52,7%</span> · IA <span style="color:#ED6845;font-weight:700">49,9%</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-warn">
+        <div class="kpi-icon">😊</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Satisfacción CSAT</div>
+    <div class="kpi-vals">Agente <span style="color:#4caf50;font-weight:700">93,1%</span> · IA <span style="color:#4caf50;font-weight:700">72,0%</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-warn">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Tiempo 1ª Respuesta</div>
+    <div class="kpi-vals">Agente <span style="color:#ED6845;font-weight:700">40s</span> · IA <span style="color:#ED6845;font-weight:700">37s</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-warn">
+        <div class="kpi-icon">🔄</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Tiempo entre Resp.</div>
+    <div class="kpi-vals">Agente <span style="color:#ED6845;font-weight:700">1,6m</span> · IA <span style="color:#4caf50;font-weight:700">35s</span></div>
+  </div>
+        
+      </div>
+    <div class="kpi-card status-ok">
+    <div class="kpi-icon">💬</div>
+    <div class="kpi-info">
+      <div class="kpi-name">Total Conversaciones</div>
+      <div class="kpi-vals">Mayo <span style="color:#4caf50;font-weight:700">1.987</span> · Obj. <span>2.000</span></div>
+    </div>
+    
+  </div></div>
+
+    <!-- CENTER NODE -->
+    <div class="concl-center-node">
+    <style>
+      .dual-score-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        width: 210px;
+      }
+      .dual-score-title {
+        font-size: 9px;
+        font-weight: 700;
+        color: #4a5a6a;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        text-align: center;
+      }
+      .score-gauge {
+        width: 100%;
+        background: #fff;
+        border-radius: 14px;
+        padding: 14px 18px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .score-gauge.agente { border-left: 4px solid #ED6845; }
+      .score-gauge.ia     { border-left: 4px solid #4caf50; }
+
+      .sg-ring {
+        position: relative;
+        width: 58px;
+        height: 58px;
+        flex-shrink: 0;
+      }
+      .sg-ring svg { width: 58px; height: 58px; }
+      .sg-ring-inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .sg-num {
+        font-size: 17px;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .sg-denom {
+        font-size: 8px;
+        color: #9aa5b1;
+        font-weight: 600;
+      }
+      .sg-info { flex: 1; }
+      .sg-label {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+      }
+      .sg-label.agente { color: #ED6845; }
+      .sg-label.ia     { color: #4caf50; }
+      .sg-bar-wrap { }
+      .sg-bar {
+        height: 5px;
+        border-radius: 3px;
+        background: #e8ecf0;
+        overflow: hidden;
+        margin-bottom: 4px;
+      }
+      .sg-bar-fill { height: 100%; border-radius: 3px; }
+      .sg-status {
+        font-size: 10px;
+        font-weight: 700;
+        color: #4a5a6a;
+      }
+
+      /* Global score pill */
+      .global-score-pill {
+        background: linear-gradient(135deg, #1a2a3a, #0f1e2e);
+        border-radius: 14px;
+        padding: 12px 18px;
+        text-align: center;
+        width: 100%;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        border: 1px solid rgba(167,139,250,0.3);
+      }
+      .gsp-label {
+        font-size: 8px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.45);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 4px;
+      }
+      .gsp-score {
+        font-size: 28px;
+        font-weight: 800;
+        color: #a78bfa;
+        line-height: 1;
+      }
+      .gsp-sub {
+        font-size: 9px;
+        color: rgba(255,255,255,0.4);
+        margin-top: 2px;
+      }
+      .gsp-status {
+        margin-top: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fbbf24;
+      }
+    </style>
+
+    <div class="dual-score-wrap">
+      <div class="dual-score-title">Score del Servicio</div>
+
+      <!-- Score Agente -->
+      <div class="score-gauge agente">
+        <div class="sg-ring">
+          <svg viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="24" fill="none" stroke="#f0e8e4" stroke-width="6"></circle>
+            <!-- 4.6/10 = 46% of circumference = 0.46 * 2π * 24 = 69.4 / 150.8 total -->
+            <circle cx="29" cy="29" r="24" fill="none" stroke="#ED6845" stroke-width="6" stroke-dasharray="80 151" stroke-dashoffset="37.7" stroke-linecap="round"></circle>
+          </svg>
+          <div class="sg-ring-inner">
+            <span class="sg-num" style="color:#ED6845">5,3</span>
+            <span class="sg-denom">/10</span>
+          </div>
+        </div>
+        <div class="sg-info">
+          <div class="sg-label agente">Canal Agente</div>
+          <div class="sg-bar-wrap">
+            <div class="sg-bar"><div class="sg-bar-fill" style="width: 53%; background: rgb(237, 104, 69);"></div></div>
+          </div>
+          <div class="sg-status">⚠️ En proceso</div>
+        </div>
+      </div>
+
+      <!-- Score IA -->
+      <div class="score-gauge ia">
+        <div class="sg-ring">
+          <svg viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="24" fill="none" stroke="#e4f0e6" stroke-width="6"></circle>
+            <!-- 5.8/10 = 58% of circumference = 0.58 * 150.8 = 87.5 -->
+            <circle cx="29" cy="29" r="24" fill="none" stroke="#4caf50" stroke-width="6" stroke-dasharray="94 151" stroke-dashoffset="37.7" stroke-linecap="round"></circle>
+          </svg>
+          <div class="sg-ring-inner">
+            <span class="sg-num" style="color:#4caf50">6,2</span>
+            <span class="sg-denom">/10</span>
+          </div>
+        </div>
+        <div class="sg-info">
+          <div class="sg-label ia">Canal IA</div>
+          <div class="sg-bar-wrap">
+            <div class="sg-bar"><div class="sg-bar-fill" style="width: 62%; background: rgb(76, 175, 80);"></div></div>
+          </div>
+          <div class="sg-status">📈 En mejora</div>
+        </div>
+      </div>
+
+      <!-- Global Score -->
+      <div class="global-score-pill">
+        <div class="gsp-label">Score Global</div>
+        <div class="gsp-score">5,8</div>
+        <div class="gsp-sub">Media ponderada Agente + IA</div>
+        <div class="gsp-status">⚡ EN PROCESO</div>
+      </div>
+    </div>
+  </div>
+
+    <!-- RIGHT KPIs -->
+    <div class="concl-right-cards">
+      <div class="kpi-card status-bad">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Duración Total</div>
+    <div class="kpi-vals">Agente <span style="color:#e53935;font-weight:700">44m</span> · IA <span style="color:#ED6845;font-weight:700">28m</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-warn">
+        <div class="kpi-icon">⭐</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Calidad</div>
+    <div class="kpi-vals">Agente <span style="color:#ED6845;font-weight:700">6,0/10</span> · IA <span style="color:#ED6845;font-weight:700">7,0/10</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-bad">
+        <div class="kpi-icon">💬</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Sentimiento</div>
+    <div class="kpi-vals">Agente <span style="color:#e53935;font-weight:700">4,0/10</span> · IA <span style="color:#e53935;font-weight:700">4,0/10</span></div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-ok">
+        <div class="kpi-icon">😤</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Frustración</div>
+    <div class="kpi-vals">Agente <span style="color:#4caf50;font-weight:700">2,0</span> · IA <span style="color:#4caf50;font-weight:700">2,0</span> (obj &lt;3)</div>
+  </div>
+        
+      </div>
+      <div class="kpi-card status-bad">
+        <div class="kpi-icon">🤖</div>
+        <div class="kpi-info">
+    <div class="kpi-name">Retención IA</div>
+    <div class="kpi-vals">IA <span style="color:#ED6845;font-weight:700">49,9%</span> · Obj. 80%</div>
+  </div>
+        
+      </div>
+    <div class="kpi-card status-bad">
+    <div class="kpi-icon">📉</div>
+    <div class="kpi-info">
+      <div class="kpi-name">Deflección IA</div>
+      <div class="kpi-vals">IA <span style="color:#ED6845;font-weight:700">42,7%</span> · Obj. 70%</div>
+    </div>
+    
+  </div><div class="kpi-card status-warn">
+    <div class="kpi-icon">🚪</div>
+    <div class="kpi-info">
+      <div class="kpi-name">Abandono IA</div>
+      <div class="kpi-vals">IA <span style="color:#e53935;font-weight:700">9,9%</span> · Obj. &lt;5%</div>
+    </div>
+    
+  </div></div>
+  </div>
+
+  <!-- BOTTOM INSIGHTS GRID -->
+  
+
+  <!-- VERDICT BANNER -->
+  
+
+<div class="verdict-collapsible" id="verdict-collapsible">
+  <div class="verdict-header" onclick="
+    const v = document.getElementById('verdict-collapsible');
+    v.classList.toggle('open');
+  ">
+    <div class="vh-icon">⚡</div>
+    <div class="vh-title">Veredicto Mayo 2026: La IA mejora su score con la ponderación dinámica, pero el sentimiento crítico y la baja retención frenan el avance</div>
+    <div class="vh-toggle">▼</div>
+  </div>
+  <div class="verdict-body">
+    <div class="verdict-body-inner">
+      <p>
+        El <strong style="color:#4caf50">canal IA</strong> lidera en coste (0,84€, −16% vs objetivo) y tiempos de respuesta, pero su retención del 49,9% —30pp por debajo del objetivo del 80%— resta puntos de forma determinante. El <strong style="color:#ED6845">canal Agente</strong> arrastra un coste insostenible (+39% sobre objetivo) y un sentimiento crítico de 4,0/10, aunque su satisfacción CSAT del 93,1% y la frustración controlada (2,0) son señales positivas.
+      </p>
+      <p>
+        El sentimiento en ambos canales (4,0/10 vs objetivo &gt;7) es la mayor alarma transversal del servicio. La hoja de ruta debe focalizarse en: entrenar la IA para elevar la retención, reducir el coste y los tiempos del agente humano, y mejorar la experiencia emocional en todos los canales.
+      </p>
+      <div class="verdict-scores">
+        <span class="vs-chip agente">🧑 Agente: 5,3 / 10</span>
+        <span class="vs-chip ia">🤖 IA: 6,2 / 10</span>
+        <span class="vs-chip global">⚡ Global: 5,8 / 10</span>
+      </div>
+      <div class="verdict-note">Score ponderado sobre 7 KPIs clave (Coste, CSAT, T1ª Resp, Calidad, Sentimiento, Frustración, Retención IA). Mayor peso = más cerca del objetivo.</div>
+    </div>
+  </div>
+</div></div>
+  </div><div id="page-proximos" class="page" style="display: block;">
+<style>
+  #page-proximos {
+    background: #f4f6f9;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ---- HERO ---- */
+  .prox-hero {
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
+    border-radius: 14px;
+    padding: 28px 32px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .prox-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 75% 50%, rgba(56,189,248,0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .prox-hero-icon {
+    font-size: 48px; flex-shrink: 0;
+  }
+  .prox-hero-text h2 {
+    font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 6px;
+  }
+  .prox-hero-text p {
+    font-size: 13px; color: rgba(255,255,255,0.55); margin: 0 0 14px;
+  }
+  .prox-hero-badges {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .prox-badge {
+    padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .prox-badge.alta   { background: rgba(237,104,69,0.2); color: #ED6845; border: 1px solid rgba(237,104,69,0.4); }
+  .prox-badge.media  { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); }
+  .prox-badge.period { background: rgba(167,139,250,0.2); color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+
+  /* ---- GANTT CONTAINER ---- */
+  .gantt-wrap {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+  .gantt-title {
+    font-size: 11px; font-weight: 700; color: #4a5a6a;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* Header months row */
+  .gantt-grid {
+    display: grid;
+    grid-template-columns: 260px repeat(8, 1fr);
+    gap: 0;
+    min-width: 720px;
+  }
+  .gantt-month-header {
+    text-align: center;
+    font-size: 10px; font-weight: 700;
+    color: #4a5a6a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 4px;
+    border-bottom: 2px solid #e8ecf0;
+    position: relative;
+  }
+  .gantt-month-header.current {
+    color: #ED6845;
+    font-weight: 800;
+  }
+  .gantt-month-header.current::after {
+    content: '▼';
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #ED6845;
+  }
+  .gantt-label-header {
+    font-size: 10px; font-weight: 700; color: #4a5a6a;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 8px 0;
+    border-bottom: 2px solid #e8ecf0;
+  }
+
+  /* Project rows */
+  .gantt-row {
+    display: contents;
+  }
+  .gantt-project-info {
+    padding: 16px 0 16px 0;
+    border-bottom: 1px solid #f0f4f8;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+  }
+  .gpi-name {
+    font-size: 13px; font-weight: 700; color: #293138;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .gpi-icon { font-size: 16px; }
+  .gpi-desc {
+    font-size: 11px; color: #6b7c8d; line-height: 1.4;
+  }
+  .gpi-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 10px; font-weight: 700;
+    width: fit-content; margin-top: 4px;
+  }
+  .gpi-badge.alta  { background: rgba(237,104,69,0.12); color: #c45a2a; }
+  .gpi-badge.media { background: rgba(56,189,248,0.12); color: #0284c7; }
+
+  /* Month cells */
+  .gantt-cell {
+    border-bottom: 1px solid #f0f4f8;
+    border-left: 1px dashed #e8ecf0;
+    padding: 16px 3px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .gantt-cell.current-month {
+    background: rgba(237,104,69,0.04);
+    border-left: 2px solid rgba(237,104,69,0.35);
+  }
+
+  /* Bar segments */
+  .gantt-bar {
+    height: 28px;
+    border-radius: 6px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    position: relative;
+  }
+  .gantt-bar.alta {
+    background: linear-gradient(90deg, #ED6845, #e8533a);
+  }
+  .gantt-bar.media {
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  }
+  .gantt-bar.alta-start  { border-radius: 6px 0 0 6px; }
+  .gantt-bar.alta-mid    { border-radius: 0; }
+  .gantt-bar.alta-end    { border-radius: 0 6px 6px 0; }
+  .gantt-bar.media-start { border-radius: 6px 0 0 6px; }
+  .gantt-bar.media-mid   { border-radius: 0; }
+  .gantt-bar.media-end   { border-radius: 0 6px 6px 0; }
+  .gantt-bar-label {
+    padding: 0 8px;
+    font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.9);
+  }
+  .gantt-cell-empty {
+    border-bottom: 1px solid #f0f4f8;
+    border-left: 1px dashed #e8ecf0;
+  }
+  .gantt-cell-empty.current-month {
+    background: rgba(237,104,69,0.04);
+    border-left: 2px solid rgba(237,104,69,0.35);
+  }
+
+  /* Legend */
+  .gantt-legend {
+    display: flex; gap: 20px; align-items: center;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid #f0f4f8;
+    flex-wrap: wrap;
+  }
+  .gl-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #4a5a6a; }
+  .gl-dot  { width: 12px; height: 12px; border-radius: 3px; }
+  .gl-today { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #ED6845; font-weight: 700; }
+  .gl-today-line { width: 2px; height: 14px; background: #ED6845; border-radius: 2px; }
+
+  /* Project cards below */
+  .prox-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .prox-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border-left: 4px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .prox-card.alta  { border-color: #ED6845; }
+  .prox-card.media { border-color: #38bdf8; }
+  .prox-card-header {
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .prox-card-icon {
+    font-size: 24px; flex-shrink: 0; margin-top: 2px;
+  }
+  .prox-card-title {
+    font-size: 14px; font-weight: 800; color: #293138;
+    line-height: 1.3; flex: 1;
+  }
+  .prox-card-meta {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .pcm-badge {
+    padding: 3px 10px; border-radius: 12px;
+    font-size: 10px; font-weight: 700;
+  }
+  .pcm-badge.alta  { background: rgba(237,104,69,0.12); color: #c45a2a; }
+  .pcm-badge.media { background: rgba(56,189,248,0.12); color: #0284c7; }
+  .pcm-period {
+    font-size: 11px; color: #6b7c8d;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .prox-card-body {
+    font-size: 12px; color: #4a5a6a; line-height: 1.5;
+  }
+  .prox-card-progress {
+    margin-top: 4px;
+  }
+  .pcpr-label {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: #9aa5b1; margin-bottom: 4px;
+  }
+  .pcpr-bar {
+    height: 4px; border-radius: 3px;
+    background: #e8ecf0; overflow: hidden;
+  }
+  .pcpr-fill { height: 100%; border-radius: 3px; }
+  .pcpr-fill.alta  { background: #ED6845; }
+  .pcpr-fill.media { background: #38bdf8; }
+
+  /* LAYOUT: Gantt + Cards side by side */
+  .proximos-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 24px;
+  }
+  .proximos-layout .gantt-wrap {
+    margin-bottom: 0 !important;
+  }
+  .proximos-layout .prox-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 0 !important;
+  }
+  
+  /* PRIORITY COLORS: Alta=red, Media=orange, Baja=blue */
+  /* Cards */
+  .prox-card.alta  { border-color: #d32f2f !important; }
+  .prox-card.media { border-color: #ED6845 !important; }
+  .prox-card.baja  { border-color: #38bdf8 !important; }
+  
+  /* Card badges */
+  .pcm-badge.alta  { background: rgba(211,47,47,0.10) !important; color: #b71c1c !important; }
+  .pcm-badge.media { background: rgba(237,104,69,0.12) !important; color: #b84a1e !important; }
+  .pcm-badge.baja  { background: rgba(56,189,248,0.12) !important; color: #0284c7 !important; }
+  
+  /* Gantt info badges */
+  .gpi-badge.alta  { background: rgba(211,47,47,0.10) !important; color: #b71c1c !important; }
+  .gpi-badge.media { background: rgba(237,104,69,0.12) !important; color: #b84a1e !important; }
+  .gpi-badge.baja  { background: rgba(56,189,248,0.12) !important; color: #0284c7 !important; }
+  
+  /* Gantt bars */
+  .gantt-bar.alta  { background: #d32f2f !important; }
+  .gantt-bar.media { background: #ED6845 !important; }
+  .gantt-bar.baja  { background: #38bdf8 !important; }
+  
+  /* Legend */
+  .legend-dot.alta  { background: #d32f2f !important; }
+  .legend-dot.media { background: #ED6845 !important; }
+  .legend-dot.baja  { background: #38bdf8 !important; }
+  
+  /* Progress bars */
+  .pcpr-fill.alta  { background: #d32f2f !important; }
+  .pcpr-fill.media { background: #ED6845 !important; }
+  .pcpr-fill.baja  { background: #38bdf8 !important; }
+
+  /* Compact card layout for right panel */
+  .proximos-layout .prox-card {
+    padding: 14px 16px !important;
+    border-radius: 10px !important;
+  }
+  .proximos-layout .prox-card-header {
+    margin-bottom: 8px;
+  }
+  .proximos-layout .prox-card-icon {
+    font-size: 20px !important;
+  }
+  .proximos-layout .prox-card-title {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+  .proximos-layout .prox-card-meta {
+    margin-bottom: 6px;
+  }
+  .proximos-layout .prox-card-body {
+    font-size: 11.5px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 8px !important;
+    color: #4a5a6a !important;
+  }
+  .proximos-layout .prox-card-progress {
+    margin-top: 6px !important;
+  }
+  .proximos-layout .pcpr-label {
+    font-size: 10px !important;
+    margin-bottom: 4px !important;
+  }
+  .proximos-layout .pcpr-bar {
+    height: 5px !important;
+    border-radius: 4px !important;
+  }
+
+  /* Gantt scrollable if needed */
+  .proximos-layout .gantt-wrap {
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .proximos-layout .gantt-grid {
+    min-width: 600px !important;
+  }
+
+  /* Fix gantt to not overflow */
+  .proximos-layout .gantt-grid {
+    min-width: 0 !important;
+    grid-template-columns: 220px repeat(8, 1fr) !important;
+  }
+  .proximos-layout .gantt-wrap {
+    overflow-x: hidden;
+  }
+  .proximos-layout .gantt-project-info {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* FULL WIDTH LAYOUT - override fixed column widths */
+  .proximos-layout {
+    grid-template-columns: 1fr 420px !important;
+    width: 100% !important;
+  }
+  .proximos-layout .gantt-wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+  .proximos-layout .gantt-grid {
+    grid-template-columns: 200px repeat(8, 1fr) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .proximos-layout .prox-cards {
+    width: 420px !important;
+    flex-shrink: 0 !important;
+  }
+</style>
+
+<div class="page-content" style="padding: 24px 28px; max-width: none;">
+
+  <!-- HERO -->
+  <div class="prox-hero">
+    <div class="prox-hero-icon">🗺️</div>
+    <div class="prox-hero-text">
+      <h2>Roadmap de Proyectos — 2026</h2>
+      <p>Iniciativas en curso y planificadas para mejorar el servicio Customer Success Support</p>
+      <div class="prox-hero-badges">
+        <span class="prox-badge alta" style="background: rgb(211, 47, 47);">🔴 2 Prioridad Alta</span>
+        <span class="prox-badge media" style="background: rgb(237, 104, 69);">🟠 1 Prioridad Media</span>
+        <div class="prox-badge" style="background: rgb(56, 189, 248); color: rgb(255, 255, 255); padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;">🔵 1 Prioridad Baja</div><span class="prox-badge period">📅 May — Dic 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GANTT CHART -->
+  <div class="proximos-layout"><div class="gantt-wrap">
+    <div class="gantt-title">📊 Timeline de Proyectos — Mayo a Diciembre 2026</div>
+    <div class="gantt-grid">
+
+      <!-- HEADER ROW -->
+      <div class="gantt-label-header">Proyecto</div>
+      <div class="gantt-month-header">May</div>
+      <div class="gantt-month-header current">Jun ▾</div>
+      <div class="gantt-month-header">Jul</div>
+      <div class="gantt-month-header">Ago</div>
+      <div class="gantt-month-header">Sep</div>
+      <div class="gantt-month-header">Oct</div>
+      <div class="gantt-month-header">Nov</div>
+      <div class="gantt-month-header">Dic</div>
+
+      <!-- ROW 1: Nuevo agente IA (Matías) — Jun a Sep — Alta -->
+      <div class="gantt-project-info">
+        <div class="gpi-name"><span class="gpi-icon">🤖</span> Nuevo Agente IA (Matías)</div>
+        <div class="gpi-desc">Implementación del nuevo agente de soporte con IA</div>
+        <div class="gpi-badge alta">🔴 Prioridad Alta</div>
+      </div>
+      <div class="gantt-cell-empty"></div><!-- May -->
+      <div class="gantt-cell current-month"><!-- Jun -->
+        <div class="gantt-bar alta" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
+      </div>
+      <div class="gantt-cell"><!-- Jul -->
+        <div class="gantt-bar alta" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Ago -->
+        <div class="gantt-bar alta" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Sep -->
+        <div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
+      </div>
+      <div class="gantt-cell-empty"></div><!-- Oct -->
+      <div class="gantt-cell-empty"></div><!-- Nov -->
+      <div class="gantt-cell-empty"></div><!-- Dic -->
+
+      <!-- ROW 2: Dashboard priorización — Jun a Jul — Media -->
+      <div class="gantt-project-info">
+        <div class="gpi-name"><span class="gpi-icon">📊</span> Dashboard de Priorización</div>
+        <div class="gpi-desc">Dashboard de priorización de mejoras del servicio</div>
+        <div class="gpi-badge media">🟠 Prioridad Media</div>
+      </div>
+      <div class="gantt-cell-empty"></div><!-- May -->
+      <div class="gantt-cell current-month"><!-- Jun -->
+        <div class="gantt-bar media" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
+      </div>
+      <div class="gantt-cell"><!-- Jul -->
+        <div class="gantt-bar media" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
+      </div>
+      <div class="gantt-cell-empty"></div><!-- Ago -->
+      <div class="gantt-cell-empty"></div><!-- Sep -->
+      <div class="gantt-cell-empty"></div><!-- Oct -->
+      <div class="gantt-cell-empty"></div><!-- Nov -->
+      <div class="gantt-cell-empty"></div><!-- Dic -->
+
+      <!-- ROW 3: Automatización contenido Claude — May a Sep — Alta -->
+      <div class="gantt-project-info">
+        <div class="gpi-name"><span class="gpi-icon">✍️</span> Automatización Contenido (Claude)</div>
+        <div class="gpi-desc">Generación automática de contenido en centro de ayuda con Claude Console</div>
+        <div class="gpi-badge alta">🔴 Prioridad Alta</div>
+      </div>
+      <div class="gantt-cell"><!-- May -->
+        <div class="gantt-bar alta" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
+      </div>
+      <div class="gantt-cell current-month"><!-- Jun -->
+        <div class="gantt-bar alta" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Jul -->
+        <div class="gantt-bar alta" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Ago -->
+        <div class="gantt-bar alta" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Sep -->
+        <div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
+      </div>
+      <div class="gantt-cell-empty"></div><!-- Oct -->
+      <div class="gantt-cell-empty"></div><!-- Nov -->
+      <div class="gantt-cell-empty"></div><!-- Dic -->
+
+      <!-- ROW 4: Comunidad soporte — Jun a Dic — Media -->
+      <div class="gantt-project-info">
+        <div class="gpi-name"><span class="gpi-icon">👥</span> Comunidad de Soporte</div>
+        <div class="gpi-desc">Diseño y validación de prototipos de comunidad de soporte</div>
+        <div class="gpi-badge baja">🔵 Prioridad Baja</div>
+      </div>
+      <div class="gantt-cell-empty"></div><!-- May -->
+      <div class="gantt-cell current-month"><!-- Jun -->
+        <div class="gantt-bar baja" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
+      </div>
+      <div class="gantt-cell"><!-- Jul -->
+        <div class="gantt-bar baja" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Ago -->
+        <div class="gantt-bar baja" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Sep -->
+        <div class="gantt-bar baja" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Oct -->
+        <div class="gantt-bar baja" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Nov -->
+        <div class="gantt-bar baja" style="border-radius:0;"></div>
+      </div>
+      <div class="gantt-cell"><!-- Dic -->
+        <div class="gantt-bar baja" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
+      </div>
+
+    </div><!-- end gantt-grid -->
+
+    <!-- Legend -->
+    <div class="gantt-legend">
+      <div class="gl-item"><div class="gl-dot" style="background: rgb(211, 47, 47);"></div> Prioridad Alta</div>
+      <div class="gl-item"><div class="gl-dot" style="background: none rgb(237, 104, 69);"></div> Prioridad Media</div>
+      <div class="gl-item"><div class="gl-dot" style="background:#38bdf8;width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:5px;"></div><span>Prioridad Baja</span></div><div class="gl-today"><div class="gl-today-line"></div> Mes actual (Junio 2026)</div>
+    </div>
+  </div><div class="prox-cards">
+    <!-- Card 1 -->
+    <div class="prox-card alta">
+      <div class="prox-card-header">
+        <div class="prox-card-icon">🤖</div>
+        <div class="prox-card-title">Nuevo Agente IA de Soporte (Matías)</div>
+      </div>
+      <div class="prox-card-meta">
+        <span class="pcm-badge alta">🔴 Prioridad Alta</span>
+        <span class="pcm-period">📅 Junio — Septiembre 2026</span>
+      </div>
+      <div class="prox-card-body">
+        Implementación de un nuevo agente de soporte basado en IA para mejorar la retención y automatización del canal IA. Objetivo: elevar la tasa de retención del 49,9% actual al objetivo del 80%.
+      </div>
+      <div class="prox-card-progress">
+        <div class="pcpr-label"><span>Progreso estimado</span><span>25%</span></div>
+        <div class="pcpr-bar"><div class="pcpr-fill alta" style="width:25%"></div></div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="prox-card media">
+      <div class="prox-card-header">
+        <div class="prox-card-icon">📊</div>
+        <div class="prox-card-title">Dashboard de Priorización de Mejoras</div>
+      </div>
+      <div class="prox-card-meta">
+        <span class="pcm-badge media">🟠 Prioridad Media</span>
+        <span class="pcm-period">📅 Junio — Julio 2026</span>
+      </div>
+      <div class="prox-card-body">
+        Desarrollo de un dashboard de priorización de mejoras del servicio CS, para identificar y ordenar las acciones de mejora con mayor impacto en los KPIs.
+      </div>
+      <div class="prox-card-progress">
+        <div class="pcpr-label"><span>Progreso estimado</span><span>10%</span></div>
+        <div class="pcpr-bar"><div class="pcpr-fill media" style="width:10%"></div></div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="prox-card alta">
+      <div class="prox-card-header">
+        <div class="prox-card-icon">✍️</div>
+        <div class="prox-card-title">Automatización de Contenido con Claude Console</div>
+      </div>
+      <div class="prox-card-meta">
+        <span class="pcm-badge alta">🔴 Prioridad Alta</span>
+        <span class="pcm-period">📅 Mayo — Septiembre 2026</span>
+      </div>
+      <div class="prox-card-body">
+        Automatización de la generación de contenido en el centro de ayuda utilizando Claude Console. Permite escalar la producción de FAQs, guías y respuestas tipo sin intervención manual.
+      </div>
+      <div class="prox-card-progress">
+        <div class="pcpr-label"><span>Progreso estimado</span><span>40%</span></div>
+        <div class="pcpr-bar"><div class="pcpr-fill alta" style="width:40%"></div></div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="prox-card baja">
+      <div class="prox-card-header">
+        <div class="prox-card-icon">👥</div>
+        <div class="prox-card-title">Prototipos de Comunidad de Soporte</div>
+      </div>
+      <div class="prox-card-meta">
+        <span class="pcm-badge baja">🔵 Prioridad Baja</span>
+        <span class="pcm-period">📅 Junio — Diciembre 2026</span>
+      </div>
+      <div class="prox-card-body">
+        Diseño y validación de prototipos de una comunidad de soporte. Exploración de modelos de autoservicio y comunidad que complementen los canales de IA y agente humano.
+      </div>
+      <div class="prox-card-progress">
+        <div class="pcpr-label"><span>Progreso estimado</span><span>5%</span></div>
+        <div class="pcpr-bar"><div class="pcpr-fill baja" style="width:5%"></div></div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- PROJECT CARDS -->
+  
+
+</div>
+</div></div><!-- end content -->
 </div><!-- end main -->
 
 <script>
@@ -3331,4 +4558,40 @@ if (document.readyState === 'loading') {
 
 })();
 </script>
-</body></html>
+<script id="showpage-patch-script">
+(function() {
+  var _origShowPage = window.showPage;
+  window.showPage = function(pageId, el, level, kpiName) {
+    _origShowPage.call(this, pageId, el, level, kpiName);
+    var conclusionSubmenu = document.getElementById('submenu-conclusion-final');
+    var conclusionParent = conclusionSubmenu ? conclusionSubmenu.previousElementSibling : null;
+    if (conclusionSubmenu && conclusionParent) {
+      if (pageId === 'conclusion' || pageId === 'proximos') {
+        conclusionSubmenu.classList.add('submenu-open');
+        conclusionParent.classList.add('submenu-open');
+      } else {
+        conclusionSubmenu.classList.remove('submenu-open');
+        conclusionParent.classList.remove('submenu-open');
+      }
+    }
+  };
+})();
+</script><div id="claude-agent-glow-border" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease-in-out;"><div id="claude-agent-glow-border-inner" style="position: absolute; inset: 0px; will-change: opacity; box-shadow: rgba(217, 119, 87, 0.7) 0px 0px 15px inset, rgba(217, 119, 87, 0.5) 0px 0px 25px inset, rgba(217, 119, 87, 0.2) 0px 0px 35px inset;"></div></div><div id="claude-static-indicator-container" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); align-items: center; justify-content: center; padding: 6px 6px 6px 16px; background: rgb(250, 249, 245); border: 0.5px solid rgba(31, 30, 29, 0.3); border-radius: 14px; box-shadow: rgba(0, 0, 0, 0.15) 0px 40px 80px 0px; z-index: 2147483647; pointer-events: none; white-space: nowrap; user-select: none; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; flex-shrink: 0; margin-right: 8px;">
+        <path d="M3.13946 10.6399L6.28757 8.87462L6.37405 8.73821L6.28757 8.6339H6.13189L5.60432 8.6018L3.80541 8.55366L2.24865 8.48947L0.735135 8.40923H0.492973L0.354595 8.32899L0.181622 8.1685L0.0345946 8.01605L0 7.85557L0.0345946 7.62287L0.138378 7.44634L0.224865 7.40622H0.354595L0.812973 7.44634L1.82486 7.51856L3.34703 7.62287L4.44541 7.68706L6.08 7.85557H6.33946L6.37405 7.75125L6.28757 7.68706L6.21838 7.62287L4.64432 6.55567L2.94054 5.4323L2.04973 4.78235L1.57405 4.45336L1.33189 4.14845L1.22811 3.92377L1.17622 3.69107L1.22811 3.47442L1.33189 3.28185L1.46162 3.13741L1.66054 2.99298H1.87676L2.24865 3.0331L2.39568 3.07322L2.99243 3.53059L4.26378 4.51755L5.92432 5.73721L6.16649 5.93781H6.27892V5.82548L6.16649 5.64092L5.26703 4.01204L4.30703 2.35105L3.87459 1.66098L3.76216 1.25176C3.7391 1.16082 3.69297 0.977332 3.69297 0.970913V0.762287L3.77946 0.505517L3.93513 0.240722L4.18595 0.0882648L4.4627 0H4.67892L4.83459 0.0240722L5.12865 0.0882648L5.4054 0.328987L5.82054 1.27583L6.48649 2.76028L7.52432 4.78235L7.82703 5.38415L7.99135 5.93781L8.05189 6.10632H8.15567V6.01003L8.24216 4.87061L8.39784 3.47442L8.55351 1.67703L8.6054 1.17151L8.85622 0.561685L8.9773 0.417252L9.21946 0.232698H9.35784L9.74703 0.417252L9.97189 0.665998L10.067 0.874624L10.0238 1.17151L9.83351 2.40722L9.46162 4.34102L9.21946 5.64092H9.35784L9.52216 5.47242L10.1795 4.60582L11.2778 3.22568L11.7622 2.68004L12.333 2.07823L12.6962 1.78937L13.0162 1.67703L13.3881 1.78937L13.7168 2.06219L13.8897 2.54363V2.76028L13.6649 3.32197L12.9557 4.22066L12.3676 4.98295L12.0043 5.56871L11.0011 7.02106V7.08526H11.1741L13.0768 6.67603L14.1059 6.49147L15.3341 6.28285L15.5762 6.34704L15.8876 6.53962L15.9481 6.80441L15.8876 7.12538L15.7319 7.34203L14.4173 7.66299L12.8778 7.97593L10.5854 8.51559C10.5705 8.51909 10.56 8.53236 10.56 8.54764C10.56 8.56468 10.573 8.57891 10.59 8.58044L11.6238 8.67402L12.0649 8.69809H13.1459L15.1611 8.85055L15.6886 9.19559L15.9481 9.39619L16 9.62086L15.9481 9.94985L15.8443 10.1023L15.4119 10.3029L15.1351 10.3591L14.0454 10.1023L11.4941 9.49248L10.6205 9.27583H10.4995V9.34804L11.2259 10.0622L12.5665 11.2658L14.2357 12.8225L14.3222 13.0953V13.2076L14.1059 13.5125L13.9243 13.5206L13.8811 13.4804L12.4108 12.3731L12.2984 12.325L11.84 11.8756L10.56 10.7924H10.4735V10.9047L10.7676 11.338L12.333 13.6891L12.4108 14.4112L12.2984 14.6439L11.8919 14.7884L11.667 14.7563L11.4508 14.7081L11.2605 14.5396L10.5254 13.4162L9.5827 11.9719L8.82162 10.672H8.79342C8.76039 10.672 8.73278 10.6972 8.7297 10.73L8.27676 15.5667L8.06919 15.8154L7.6454 16H7.58486L7.17838 15.6951L6.96216 15.1976L7.17838 14.2106L7.43784 12.9268L7.6454 11.9077L7.83567 10.6399L7.95187 10.2164C7.9548 10.2057 7.95069 10.1944 7.94161 10.1881C7.91157 10.1672 7.87034 10.1741 7.84878 10.2037L6.89297 11.5145L5.44 13.4804L4.28973 14.7081L4.01297 14.8205H3.80541L3.5373 14.5717V14.4514L3.58054 14.1304L3.84865 13.7372L5.44 11.7151L6.4 10.4554L7.01872 9.73222C7.04511 9.70139 7.04245 9.65523 7.0127 9.62763C7.00333 9.61894 6.98925 9.61773 6.97854 9.62471L2.75027 12.3811L1.99784 12.4774L1.66919 12.1725L1.71243 11.675L1.86811 11.5145L3.13946 10.6399Z" fill="#D97757"></path>
+      </svg>
+      <span style="vertical-align: middle; color: #141413; font-size: 14px; display: inline-block;">Claude is active in this tab group</span>
+      <div style="display: inline-block; width: 0.5px; height: 32px; background: rgba(31, 30, 29, 0.15); margin: 0 8px; vertical-align: middle;"></div>
+      <button id="claude-static-chat-button" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: transparent; border: none; cursor: pointer; pointer-events: auto; vertical-align: middle; width: 32px; height: 32px; border-radius: 8px; transition: background 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="#141413" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block;">
+          <path d="M10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5H3C2.79779 17.5 2.61549 17.3782 2.53809 17.1914C2.4607 17.0046 2.50349 16.7895 2.64648 16.6465L4.35547 14.9365C3.20124 13.6175 2.5 11.8906 2.5 10C2.5 5.85786 5.85786 2.5 10 2.5ZM10 3.5C6.41015 3.5 3.5 6.41015 3.5 10C3.5 11.7952 4.22659 13.4199 5.40332 14.5967L5.46582 14.6729C5.52017 14.7544 5.5498 14.8508 5.5498 14.9502C5.5498 15.0828 5.49709 15.2099 5.40332 15.3037L4.20703 16.5H10C13.5899 16.5 16.5 13.5899 16.5 10C16.5 6.41015 13.5899 3.5 10 3.5ZM13.29 9.30371C13.3986 9.05001 13.6925 8.93174 13.9463 9.04004C14.2 9.14863 14.3183 9.44253 14.21 9.69629C13.8506 10.536 13.1645 11.25 12.25 11.25C11.6372 11.25 11.128 10.9289 10.75 10.4648C10.372 10.9289 9.86276 11.25 9.25 11.25C8.63724 11.25 8.12801 10.9289 7.75 10.4648C7.37198 10.9289 6.86276 11.25 6.25 11.25C5.97386 11.25 5.75 11.0261 5.75 10.75C5.75 10.4739 5.97386 10.25 6.25 10.25C6.58764 10.25 7.00448 9.97056 7.29004 9.30371L7.32422 9.2373C7.41431 9.09121 7.5749 9 7.75 9C7.9501 9 8.13123 9.11975 8.20996 9.30371L8.32227 9.53516C8.59804 10.0359 8.95442 10.25 9.25 10.25C9.58764 10.25 10.0045 9.97056 10.29 9.30371L10.3242 9.2373C10.4143 9.09121 10.5749 9 10.75 9C10.9501 9 11.1312 9.11975 11.21 9.30371L11.3223 9.53516C11.598 10.0359 11.9544 10.25 12.25 10.25C12.5876 10.25 13.0045 9.97056 13.29 9.30371Z"></path>
+        </svg>
+        <span id="claude-static-chat-tooltip" style="position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); padding: 6px 12px; background: #30302E; color: #FAF9F5; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">Open chat</span>
+      </button>
+      <button id="claude-static-close-button" style="position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 6px; background: transparent; border: none; cursor: pointer; pointer-events: auto; vertical-align: middle; width: 32px; height: 32px; margin-left: 4px; border-radius: 8px; transition: background 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; display: block;">
+          <path d="M15.1464 4.14642C15.3417 3.95121 15.6582 3.95118 15.8534 4.14642C16.0486 4.34168 16.0486 4.65822 15.8534 4.85346L10.7069 9.99997L15.8534 15.1465C16.0486 15.3417 16.0486 15.6583 15.8534 15.8535C15.6826 16.0244 15.4186 16.0461 15.2245 15.918L15.1464 15.8535L9.99989 10.707L4.85338 15.8535C4.65813 16.0486 4.34155 16.0486 4.14634 15.8535C3.95115 15.6583 3.95129 15.3418 4.14634 15.1465L9.29286 9.99997L4.14634 4.85346C3.95129 4.65818 3.95115 4.34162 4.14634 4.14642C4.34154 3.95128 4.65812 3.95138 4.85338 4.14642L9.99989 9.29294L15.1464 4.14642Z" fill="#141413"></path>
+        </svg>
+        <span id="claude-static-close-tooltip" style="position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); padding: 6px 12px; background: #30302E; color: #FAF9F5; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">Dismiss</span>
+      </button>
+    </div></body></html>
