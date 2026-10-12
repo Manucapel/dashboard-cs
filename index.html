@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es"><body><style>
   .verdict-banner {
     background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
@@ -154,8 +155,8 @@
     margin-bottom: 4px;
     width: fit-content;
   }
-  .coste-mayo-card.agente .mc-channel { background: #fff3e0; color: #2a78d6; }
-  .coste-mayo-card.ia .mc-channel     { background: #e3f2fd; color: #d55181; }
+  .coste-mayo-card.agente .mc-channel { background: #e8f1fc; color: #2166b8; }
+  .coste-mayo-card.ia .mc-channel     { background: #fceef3; color: #ac3765; }
   .coste-mayo-card .mc-label { font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px; text-transform: uppercase; }
   .coste-mayo-card .mc-val   { font-size: 38px; font-weight: 700; line-height: 1.1; }
   .coste-mayo-card .mc-diff  { font-size: 12px; color: #666; margin-top: 2px; }
@@ -1322,7 +1323,7 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div>
 <div class="coste-ci-block">
 <div class="coste-ci-label" data-t="{mesAnio}">Junio 2026</div>
-<div class="coste-ci-val" data-t="{val coste ag}" style="color:#ED6845">3,63€</div>
+<div class="coste-ci-val" data-color="coste ag" data-t="{val coste ag}" style="color:#4caf50">3,63€</div>
 </div>
 <div class="coste-ci-block">
 <div class="coste-ci-label">Sector</div>
@@ -1337,7 +1338,7 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div>
 <!-- IA card -->
 <div class="coste-mayo-card ia">
-<div class="mc-channel" style="background:#e8f5e9;color:#2e7d32">IA (Bot)</div>
+<div class="mc-channel" style="background:#fceef3;color:#ac3765">IA (Bot)</div>
 <div class="mc-label" data-t="{mes} (Actual)">Junio (Actual)</div>
 <div class="mc-val" data-color="coste ia" data-t="{val coste ia}" style="color:#4caf50">0,96€</div>
 <div class="mc-diff" data-t="{diff coste ia}">▼ +14,3% vs may. | Obj. 1€ | Sector 1,05€</div>
@@ -1349,7 +1350,7 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div>
 <div class="coste-ci-block">
 <div class="coste-ci-label" data-t="{mesAnio}">Junio 2026</div>
-<div class="coste-ci-val" data-t="{val coste ia}" style="color:#4caf50">0,96€</div>
+<div class="coste-ci-val" data-color="coste ia" data-t="{val coste ia}" style="color:#4caf50">0,96€</div>
 </div>
 <div class="coste-ci-block">
 <div class="coste-ci-label">Sector</div>
@@ -1628,8 +1629,8 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
   margin-bottom: 4px;
   width: fit-content;
 }
-.csat-mayo-card.agente .mc-channel { background: #fff3e0; color: #2a78d6; }
-.csat-mayo-card.ia .mc-channel { background: #e3f2fd; color: #d55181; }
+.csat-mayo-card.agente .mc-channel { background: #e8f1fc; color: #2166b8; }
+.csat-mayo-card.ia .mc-channel { background: #fceef3; color: #ac3765; }
 .csat-mayo-card .mc-label { font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px; text-transform: uppercase; }
 .csat-mayo-card.agente .mc-val { font-size: 38px; font-weight: 700; color: #2a78d6; line-height: 1.1; }
 .csat-mayo-card.ia .mc-val { font-size: 38px; font-weight: 700; color: #ff9800; line-height: 1.1; }
@@ -1706,7 +1707,7 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div></div>
 <!-- IA card -->
 <div class="csat-label-pill"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#d55181;text-transform:uppercase;letter-spacing:1px;">IA</span></div><div class="csat-mayo-card ia">
-<div class="mc-channel" style="background:#e3f2fd;color:#1976d2;">IA (Bot)</div>
+<div class="mc-channel" style="background:#fceef3;color:#ac3765;">IA (Bot)</div>
 <div class="mc-label" data-t="{mes} (Actual)">Junio (Actual)</div>
 <div class="mc-val" data-color="csat ia" data-t="{val csat ia}" style="color: rgb(237, 104, 69);">64,3%</div>
 <div class="mc-diff" data-t="{diff csat ia}">▼ −7,7pp vs may.  |  Obj. 80%</div>
@@ -2099,7 +2100,6 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div>
 <div class="calidad-chart-row">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
 <div class="calidad-chart-card" style="padding:14px 18px;">
 <div style="font-size:11px;font-weight:700;color:#2a78d6;margin-bottom:8px;">▌ EVOLUCIÓN T.1ª RESPUESTA — AGENTE HUMANO</div>
 <div class="chart-wrap" style="position:relative;height:200px;">
@@ -2234,7 +2234,6 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div>
 <div class="calidad-chart-row">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-
 <div class="calidad-chart-card" style="padding:14px 18px;">
 <div style="font-size:11px;font-weight:700;color:#2a78d6;margin-bottom:8px;">▌ EVOLUCIÓN T. ENTRE RESPUESTAS — AGENTE HUMANO</div>
 <div class="chart-wrap" style="position:relative;height:200px;">
@@ -3457,593 +3456,440 @@ El agente registra un sentimiento medio de <strong>4,0/10</strong> con el 52,9% 
 </div>
 </div>
 </div></div>
-</div><div class="page" id="page-proximos" style="display: none;">
-<style>
-  #page-proximos {
-    background: #f4f6f9;
-    min-height: 100vh;
-    padding-bottom: 40px;
-  }
+</div><div class="page" id="page-proximos" style="display: none;"><style>
+#page-proximos { background:#f4f6f9 !important; min-height:100vh; padding-bottom:40px; }
+#page-proximos, #page-proximos * { box-sizing:border-box; }
+#page-proximos .pcpr-label span { display:inline !important; }
 
-  /* ---- HERO ---- */
-  .prox-hero {
-    background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 100%);
-    border-radius: 14px;
-    padding: 28px 32px 24px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .prox-hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 75% 50%, rgba(56,189,248,0.15) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .prox-hero-icon {
-    font-size: 48px; flex-shrink: 0;
-  }
-  .prox-hero-text h2 {
-    font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 6px;
-  }
-  .prox-hero-text p {
-    font-size: 13px; color: rgba(255,255,255,0.55); margin: 0 0 14px;
-  }
-  .prox-hero-badges {
-    display: flex; gap: 10px; flex-wrap: wrap;
-  }
-  .prox-badge {
-    padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; gap: 5px;
-  }
-  .prox-badge.alta   { background: rgba(237,104,69,0.2); color: #ED6845; border: 1px solid rgba(237,104,69,0.4); }
-  .prox-badge.media  { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid rgba(56,189,248,0.4); }
-  .prox-badge.period { background: rgba(167,139,250,0.2); color: #a78bfa; border: 1px solid rgba(167,139,250,0.4); }
+#page-proximos .prox-hero { background:linear-gradient(135deg,#1a2a3a 0%,#0f1e2e 100%) !important; border-radius:14px !important; padding:28px 32px 24px !important; margin-bottom:24px; display:flex !important; align-items:center !important; gap:28px !important; position:relative; overflow:hidden !important; }
+#page-proximos .prox-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 75% 50%,rgba(56,189,248,.15) 0%,transparent 65%) !important; }
+#page-proximos .prox-hero-icon { font-size:48px !important; flex-shrink:0 !important; position:relative; }
+#page-proximos .prox-hero-text { position:relative; }
+#page-proximos .prox-hero-text h2 { font-size:22px !important; font-weight:800 !important; color:#fff !important; margin:0 0 6px !important; }
+#page-proximos .prox-hero-text p { font-size:13px !important; color:rgba(255,255,255,.55) !important; margin:0 0 14px !important; }
+#page-proximos .prox-hero-badges { display:flex !important; gap:10px !important; flex-wrap:wrap !important; }
+#page-proximos .prox-badge { padding:4px 14px !important; border-radius:20px !important; font-size:11px !important; font-weight:700 !important; color:#fff !important; }
+#page-proximos .prox-badge.alta { background:#a11b1b !important; }
+#page-proximos .prox-badge.media { background:#ED6845 !important; }
+#page-proximos .prox-badge.baja { background:#38bdf8 !important; }
+#page-proximos .prox-badge.hab { background:#7c5cd6 !important; }
+#page-proximos .prox-badge.period { background:rgba(167,139,250,.2) !important; color:#a78bfa !important; border:1px solid rgba(167,139,250,.4); }
+#page-proximos .gantt-wrap { background:#fff !important; border-radius:14px !important; padding:24px 28px !important; box-shadow:0 2px 12px rgba(0,0,0,.07) !important; margin-bottom:24px; }
+#page-proximos .gantt-title { font-size:11px !important; font-weight:700 !important; color:#4a5a6a !important; text-transform:uppercase !important; letter-spacing:1.5px !important; margin-bottom:20px; }
+#page-proximos .gantt-grid { display:grid !important; grid-template-columns:260px repeat(8,1fr) !important; }
+#page-proximos .gantt-month-header { text-align:center !important; font-size:10px !important; font-weight:700 !important; color:#4a5a6a !important; text-transform:uppercase !important; letter-spacing:1px !important; padding:8px 4px !important; border-bottom:2px solid #e8ecf0 !important; }
+#page-proximos .gantt-month-header.current { color:#ED6845 !important; font-weight:800 !important; }
+#page-proximos .gantt-label-header { font-size:10px !important; font-weight:700 !important; color:#4a5a6a !important; text-transform:uppercase !important; letter-spacing:1px !important; padding:8px 0 !important; border-bottom:2px solid #e8ecf0 !important; }
+#page-proximos .gantt-group { font-size:10px !important; font-weight:800 !important; color:#8b97a4 !important; text-transform:uppercase !important; letter-spacing:1.4px !important; padding:16px 0 7px !important; }
+#page-proximos .gantt-group-fill { border-left:1px dashed #e8ecf0 !important; }
+#page-proximos .gantt-group-fill.current-month { background:rgba(237,104,69,.04) !important; border-left:2px solid rgba(237,104,69,.35) !important; }
+#page-proximos .gantt-project-info { padding:14px 14px 14px 0 !important; border-bottom:1px solid #f0f4f8 !important; display:flex !important; flex-direction:column !important; gap:3px !important; justify-content:center !important; }
+#page-proximos .gpi-name { font-size:13px !important; font-weight:700 !important; color:#293138 !important; display:flex !important; align-items:center !important; gap:8px !important; }
+#page-proximos .gpi-icon { font-size:16px !important; }
+#page-proximos .gpi-desc { font-size:11px !important; color:#6b7c8d !important; line-height:1.4 !important; }
+#page-proximos .gpi-badge { display:inline-flex !important; align-items:center !important; gap:4px !important; padding:2px 8px !important; border-radius:10px !important; font-size:10px !important; font-weight:700 !important; width:fit-content !important; margin-top:4px; }
+#page-proximos .gpi-badge.alta { background:rgba(161,27,27,.10) !important; color:#8d1717 !important; }
+#page-proximos .gpi-badge.media { background:rgba(237,104,69,.12) !important; color:#b84a1e !important; }
+#page-proximos .gpi-badge.baja { background:rgba(56,189,248,.12) !important; color:#0284c7 !important; }
+#page-proximos .gpi-badge.hab { background:rgba(124,92,214,.12) !important; color:#5b3fb0 !important; }
+#page-proximos .gantt-cell { border-bottom:1px solid #f0f4f8 !important; border-left:1px dashed #e8ecf0 !important; padding:14px 3px !important; display:flex !important; align-items:center !important; }
+#page-proximos .gantt-cell-empty { border-bottom:1px solid #f0f4f8 !important; border-left:1px dashed #e8ecf0 !important; }
+#page-proximos .gantt-cell.current-month, #page-proximos .gantt-cell-empty.current-month { background:rgba(237,104,69,.04) !important; border-left:2px solid rgba(237,104,69,.35) !important; }
+#page-proximos .gantt-bar { height:26px !important; width:100% !important; display:flex !important; align-items:center !important; justify-content:center !important; color:#fff !important; box-shadow:0 2px 6px rgba(0,0,0,.15) !important; overflow:hidden !important; }
+#page-proximos .gantt-bar.alta { background:#a11b1b !important; }
+#page-proximos .gantt-bar.media { background:#ED6845 !important; }
+#page-proximos .gantt-bar.baja { background:#38bdf8 !important; }
+#page-proximos .gantt-bar.hab { background:#7c5cd6 !important; }
+#page-proximos .gantt-bar-label { padding:0 6px !important; font-size:9.5px !important; font-weight:700 !important; color:rgba(255,255,255,.92) !important; white-space:nowrap !important; }
+#page-proximos .gantt-legend { display:flex !important; gap:20px !important; align-items:center !important; margin-top:16px; padding-top:16px; border-top:1px solid #f0f4f8 !important; flex-wrap:wrap !important; }
+#page-proximos .gl-item { display:flex !important; align-items:center !important; gap:6px !important; font-size:11px !important; color:#4a5a6a !important; }
+#page-proximos .gl-dot { width:12px !important; height:12px !important; border-radius:3px !important; }
+#page-proximos .gl-dot.alta { background:#a11b1b !important; }
+#page-proximos .gl-dot.media { background:#ED6845 !important; }
+#page-proximos .gl-dot.baja { background:#38bdf8 !important; }
+#page-proximos .gl-dot.hab { background:#7c5cd6 !important; }
+#page-proximos .gl-today { display:flex !important; align-items:center !important; gap:6px !important; font-size:11px !important; color:#ED6845 !important; font-weight:700 !important; }
+#page-proximos .gl-today-line { width:2px !important; height:14px !important; background:#ED6845 !important; border-radius:2px !important; }
+#page-proximos .sec-title { font-size:11px !important; font-weight:800 !important; color:#8b97a4 !important; text-transform:uppercase !important; letter-spacing:1.4px !important; margin:0 0 12px 2px !important; }
+#page-proximos .prox-cards { display:grid !important; grid-template-columns:repeat(3,1fr) !important; gap:16px !important; margin-bottom:24px; }
+#page-proximos .prox-card { background:#fff !important; border-radius:12px !important; padding:18px 20px !important; box-shadow:0 2px 10px rgba(0,0,0,.07) !important; border-left:4px solid !important; display:flex !important; flex-direction:column !important; gap:8px !important; }
+#page-proximos .prox-card.alta { border-color:#a11b1b !important; }
+#page-proximos .prox-card.media { border-color:#ED6845 !important; }
+#page-proximos .prox-card.baja { border-color:#38bdf8 !important; }
+#page-proximos .prox-card.hab { border-color:#7c5cd6 !important; }
+#page-proximos .prox-card-header { display:flex !important; align-items:flex-start !important; gap:10px !important; }
+#page-proximos .prox-card-icon { font-size:22px !important; flex-shrink:0 !important; }
+#page-proximos .prox-card-title { font-size:13.5px !important; font-weight:800 !important; color:#293138 !important; line-height:1.3 !important; flex:1 !important; }
+#page-proximos .prox-card-meta { display:flex !important; gap:10px !important; align-items:center !important; flex-wrap:wrap !important; }
+#page-proximos .pcm-badge { padding:3px 10px !important; border-radius:12px !important; font-size:10px !important; font-weight:700 !important; }
+#page-proximos .pcm-badge.alta { background:rgba(161,27,27,.10) !important; color:#8d1717 !important; }
+#page-proximos .pcm-badge.media { background:rgba(237,104,69,.12) !important; color:#b84a1e !important; }
+#page-proximos .pcm-badge.baja { background:rgba(56,189,248,.12) !important; color:#0284c7 !important; }
+#page-proximos .pcm-badge.hab { background:rgba(124,92,214,.12) !important; color:#5b3fb0 !important; }
+#page-proximos .pcm-period { font-size:11px !important; color:#6b7c8d !important; }
+#page-proximos .prox-card-body { font-size:12px !important; color:#4a5a6a !important; line-height:1.5 !important; flex:1 !important; }
+#page-proximos .pcpr-label { display:flex !important; justify-content:space-between !important; font-size:10px !important; color:#9aa5b1 !important; margin-bottom:4px; }
+#page-proximos .pcpr-bar { height:5px !important; border-radius:4px !important; background:#e8ecf0 !important; overflow:hidden !important; }
+#page-proximos .pcpr-fill { height:100% !important; border-radius:4px !important; }
+#page-proximos .pcpr-fill.alta { background:#a11b1b !important; }
+#page-proximos .pcpr-fill.media { background:#ED6845 !important; }
+#page-proximos .pcpr-fill.baja { background:#38bdf8 !important; }
+#page-proximos .pcpr-fill.hab { background:#7c5cd6 !important; }
 
-  /* ---- GANTT CONTAINER ---- */
-  .gantt-wrap {
-    background: #fff;
-    border-radius: 14px;
-    padding: 24px 28px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    margin-bottom: 24px;
-    overflow-x: auto;
-  }
-  .gantt-title {
-    font-size: 11px; font-weight: 700; color: #4a5a6a;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 8px;
-  }
 
-  /* Header months row */
-  .gantt-grid {
-    display: grid;
-    grid-template-columns: 260px repeat(8, 1fr);
-    gap: 0;
-    min-width: 720px;
-  }
-  .gantt-month-header {
-    text-align: center;
-    font-size: 10px; font-weight: 700;
-    color: #4a5a6a;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 4px;
-    border-bottom: 2px solid #e8ecf0;
-    position: relative;
-  }
-  .gantt-month-header.current {
-    color: #ED6845;
-    font-weight: 800;
-  }
-  .gantt-month-header.current::after {
-    content: '▼';
-    position: absolute;
-    bottom: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    color: #ED6845;
-  }
-  .gantt-label-header {
-    font-size: 10px; font-weight: 700; color: #4a5a6a;
-    text-transform: uppercase; letter-spacing: 1px;
-    padding: 8px 0;
-    border-bottom: 2px solid #e8ecf0;
-  }
+@media (max-width:1100px) {
+#page-proximos .prox-cards { grid-template-columns:repeat(2,1fr) !important; } 
+}
 
-  /* Project rows */
-  .gantt-row {
-    display: contents;
-  }
-  .gantt-project-info {
-    padding: 16px 0 16px 0;
-    border-bottom: 1px solid #f0f4f8;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    justify-content: center;
-  }
-  .gpi-name {
-    font-size: 13px; font-weight: 700; color: #293138;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .gpi-icon { font-size: 16px; }
-  .gpi-desc {
-    font-size: 11px; color: #6b7c8d; line-height: 1.4;
-  }
-  .gpi-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 8px; border-radius: 10px;
-    font-size: 10px; font-weight: 700;
-    width: fit-content; margin-top: 4px;
-  }
-  .gpi-badge.alta  { background: rgba(237,104,69,0.12); color: #c45a2a; }
-  .gpi-badge.media { background: rgba(56,189,248,0.12); color: #0284c7; }
 
-  /* Month cells */
-  .gantt-cell {
-    border-bottom: 1px solid #f0f4f8;
-    border-left: 1px dashed #e8ecf0;
-    padding: 16px 3px;
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  .gantt-cell.current-month {
-    background: rgba(237,104,69,0.04);
-    border-left: 2px solid rgba(237,104,69,0.35);
-  }
 
-  /* Bar segments */
-  .gantt-bar {
-    height: 28px;
-    border-radius: 6px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    position: relative;
-  }
-  .gantt-bar.alta {
-    background: linear-gradient(90deg, #ED6845, #e8533a);
-  }
-  .gantt-bar.media {
-    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-  }
-  .gantt-bar.alta-start  { border-radius: 6px 0 0 6px; }
-  .gantt-bar.alta-mid    { border-radius: 0; }
-  .gantt-bar.alta-end    { border-radius: 0 6px 6px 0; }
-  .gantt-bar.media-start { border-radius: 6px 0 0 6px; }
-  .gantt-bar.media-mid   { border-radius: 0; }
-  .gantt-bar.media-end   { border-radius: 0 6px 6px 0; }
-  .gantt-bar-label {
-    padding: 0 8px;
-    font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.9);
-  }
-  .gantt-cell-empty {
-    border-bottom: 1px solid #f0f4f8;
-    border-left: 1px dashed #e8ecf0;
-  }
-  .gantt-cell-empty.current-month {
-    background: rgba(237,104,69,0.04);
-    border-left: 2px solid rgba(237,104,69,0.35);
-  }
-
-  /* Legend */
-  .gantt-legend {
-    display: flex; gap: 20px; align-items: center;
-    margin-top: 16px; padding-top: 16px;
-    border-top: 1px solid #f0f4f8;
-    flex-wrap: wrap;
-  }
-  .gl-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #4a5a6a; }
-  .gl-dot  { width: 12px; height: 12px; border-radius: 3px; }
-  .gl-today { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #ED6845; font-weight: 700; }
-  .gl-today-line { width: 2px; height: 14px; background: #ED6845; border-radius: 2px; }
-
-  /* Project cards below */
-  .prox-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .prox-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px 22px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-    border-left: 4px solid;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .prox-card.alta  { border-color: #ED6845; }
-  .prox-card.media { border-color: #38bdf8; }
-  .prox-card-header {
-    display: flex; align-items: flex-start; gap: 12px;
-  }
-  .prox-card-icon {
-    font-size: 24px; flex-shrink: 0; margin-top: 2px;
-  }
-  .prox-card-title {
-    font-size: 14px; font-weight: 800; color: #293138;
-    line-height: 1.3; flex: 1;
-  }
-  .prox-card-meta {
-    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-  }
-  .pcm-badge {
-    padding: 3px 10px; border-radius: 12px;
-    font-size: 10px; font-weight: 700;
-  }
-  .pcm-badge.alta  { background: rgba(237,104,69,0.12); color: #c45a2a; }
-  .pcm-badge.media { background: rgba(56,189,248,0.12); color: #0284c7; }
-  .pcm-period {
-    font-size: 11px; color: #6b7c8d;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .prox-card-body {
-    font-size: 12px; color: #4a5a6a; line-height: 1.5;
-  }
-  .prox-card-progress {
-    margin-top: 4px;
-  }
-  .pcpr-label {
-    display: flex; justify-content: space-between;
-    font-size: 10px; color: #9aa5b1; margin-bottom: 4px;
-  }
-  .pcpr-bar {
-    height: 4px; border-radius: 3px;
-    background: #e8ecf0; overflow: hidden;
-  }
-  .pcpr-fill { height: 100%; border-radius: 3px; }
-  .pcpr-fill.alta  { background: #ED6845; }
-  .pcpr-fill.media { background: #38bdf8; }
-
-  /* LAYOUT: Gantt + Cards side by side */
-  .proximos-layout {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 20px;
-    align-items: start;
-    margin-bottom: 24px;
-  }
-  .proximos-layout .gantt-wrap {
-    margin-bottom: 0 !important;
-  }
-  .proximos-layout .prox-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 0 !important;
-  }
-  
-  /* PRIORITY COLORS: Alta=red, Media=orange, Baja=blue */
-  /* Cards */
-  .prox-card.alta  { border-color: #d32f2f !important; }
-  .prox-card.media { border-color: #ED6845 !important; }
-  .prox-card.baja  { border-color: #38bdf8 !important; }
-  
-  /* Card badges */
-  .pcm-badge.alta  { background: rgba(211,47,47,0.10) !important; color: #b71c1c !important; }
-  .pcm-badge.media { background: rgba(237,104,69,0.12) !important; color: #b84a1e !important; }
-  .pcm-badge.baja  { background: rgba(56,189,248,0.12) !important; color: #0284c7 !important; }
-  
-  /* Gantt info badges */
-  .gpi-badge.alta  { background: rgba(211,47,47,0.10) !important; color: #b71c1c !important; }
-  .gpi-badge.media { background: rgba(237,104,69,0.12) !important; color: #b84a1e !important; }
-  .gpi-badge.baja  { background: rgba(56,189,248,0.12) !important; color: #0284c7 !important; }
-  
-  /* Gantt bars */
-  .gantt-bar.alta  { background: #d32f2f !important; }
-  .gantt-bar.media { background: #ED6845 !important; }
-  .gantt-bar.baja  { background: #38bdf8 !important; }
-  
-  /* Legend */
-  .legend-dot.alta  { background: #d32f2f !important; }
-  .legend-dot.media { background: #ED6845 !important; }
-  .legend-dot.baja  { background: #38bdf8 !important; }
-  
-  /* Progress bars */
-  .pcpr-fill.alta  { background: #d32f2f !important; }
-  .pcpr-fill.media { background: #ED6845 !important; }
-  .pcpr-fill.baja  { background: #38bdf8 !important; }
-
-  /* Compact card layout for right panel */
-  .proximos-layout .prox-card {
-    padding: 14px 16px !important;
-    border-radius: 10px !important;
-  }
-  .proximos-layout .prox-card-header {
-    margin-bottom: 8px;
-  }
-  .proximos-layout .prox-card-icon {
-    font-size: 20px !important;
-  }
-  .proximos-layout .prox-card-title {
-    font-size: 13px !important;
-    font-weight: 700 !important;
-  }
-  .proximos-layout .prox-card-meta {
-    margin-bottom: 6px;
-  }
-  .proximos-layout .prox-card-body {
-    font-size: 11.5px !important;
-    line-height: 1.45 !important;
-    margin-bottom: 8px !important;
-    color: #4a5a6a !important;
-  }
-  .proximos-layout .prox-card-progress {
-    margin-top: 6px !important;
-  }
-  .proximos-layout .pcpr-label {
-    font-size: 10px !important;
-    margin-bottom: 4px !important;
-  }
-  .proximos-layout .pcpr-bar {
-    height: 5px !important;
-    border-radius: 4px !important;
-  }
-
-  /* Gantt scrollable if needed */
-  .proximos-layout .gantt-wrap {
-    overflow-x: auto;
-    min-width: 0;
-  }
-  .proximos-layout .gantt-grid {
-    min-width: 600px !important;
-  }
-
-  /* Fix gantt to not overflow */
-  .proximos-layout .gantt-grid {
-    min-width: 0 !important;
-    grid-template-columns: 220px repeat(8, 1fr) !important;
-  }
-  .proximos-layout .gantt-wrap {
-    overflow-x: hidden;
-  }
-  .proximos-layout .gantt-project-info {
-    min-width: 0 !important;
-    overflow: hidden !important;
-  }
-
-  /* FULL WIDTH LAYOUT - override fixed column widths */
-  .proximos-layout {
-    grid-template-columns: 1fr 420px !important;
-    width: 100% !important;
-  }
-  .proximos-layout .gantt-wrap {
-    width: 100% !important;
-    min-width: 0 !important;
-    overflow-x: hidden !important;
-  }
-  .proximos-layout .gantt-grid {
-    grid-template-columns: 200px repeat(8, 1fr) !important;
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-  .proximos-layout .prox-cards {
-    width: 420px !important;
-    flex-shrink: 0 !important;
-  }
+@media (max-width:720px) {
+#page-proximos .prox-cards { grid-template-columns:1fr !important; }
+#page-proximos .gantt-wrap { overflow-x:auto; }
+#page-proximos .gantt-grid { min-width:860px; } 
+}
 </style>
-<div class="page-content" style="padding: 24px 28px; max-width: none;">
-<!-- HERO -->
+<div class="page-content" style="padding:24px 28px;max-width:none;">
 <div class="prox-hero">
 <div class="prox-hero-icon">🗺️</div>
 <div class="prox-hero-text">
-<h2>Roadmap de Proyectos — 2026</h2>
-<p>Iniciativas en curso y planificadas para mejorar el servicio Customer Success Support</p>
+<h2>Roadmap de Proyectos — Customer Success Support</h2>
+<p>Iniciativas en curso y planificadas para escalar el servicio de soporte</p>
 <div class="prox-hero-badges">
-<span class="prox-badge alta" style="background: rgb(211, 47, 47);">🔴 2 Prioridad Alta</span>
-<span class="prox-badge media" style="background: rgb(237, 104, 69);">🟠 1 Prioridad Media</span>
-<div class="prox-badge" style="background: rgb(56, 189, 248); color: rgb(255, 255, 255); padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700;">🔵 1 Prioridad Baja</div><span class="prox-badge period">📅 May — Dic 2026</span>
+<span class="prox-badge alta">🔴 3 Prioridad Alta</span>
+<span class="prox-badge media">🟠 4 Prioridad Media</span>
+<span class="prox-badge baja">🔵 1 Prioridad Baja</span>
+<span class="prox-badge hab">🟣 2 Habilidades de equipo</span>
+<span class="prox-badge period">📅 Sep 2026 — Abr 2027</span>
 </div>
 </div>
 </div>
-<!-- GANTT CHART -->
-<div class="proximos-layout"><div class="gantt-wrap">
-<div class="gantt-title">📊 Timeline de Proyectos — Mayo a Diciembre 2026</div>
+<div class="gantt-wrap">
+<div class="gantt-title">📊 Timeline — septiembre 2026 a abril 2027</div>
 <div class="gantt-grid">
-<!-- HEADER ROW -->
-<div class="gantt-label-header">Proyecto</div>
-<div class="gantt-month-header">May</div>
-<div class="gantt-month-header current">Jun ▾</div>
-<div class="gantt-month-header">Jul</div>
-<div class="gantt-month-header">Ago</div>
-<div class="gantt-month-header">Sep</div>
-<div class="gantt-month-header">Oct</div>
-<div class="gantt-month-header">Nov</div>
-<div class="gantt-month-header">Dic</div>
-<!-- ROW 1: Nuevo agente IA (Matías) — Jun a Sep — Alta -->
+<div class="gantt-label-header">Iniciativa</div>
+<div class="gantt-month-header">Sep 26</div>
+<div class="gantt-month-header current">Oct 26 ▾</div>
+<div class="gantt-month-header">Nov 26</div>
+<div class="gantt-month-header">Dic 26</div>
+<div class="gantt-month-header">Ene 27</div>
+<div class="gantt-month-header">Feb 27</div>
+<div class="gantt-month-header">Mar 27</div>
+<div class="gantt-month-header">Abr 27</div>
+<div class="gantt-group">Proyectos</div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill current-month"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
 <div class="gantt-project-info">
-<div class="gpi-name"><span class="gpi-icon">🤖</span> Nuevo Agente IA (Matías)</div>
-<div class="gpi-desc">Implementación del nuevo agente de soporte con IA</div>
+<div class="gpi-name"><span class="gpi-icon">🤖</span>Agente IA de soporte</div>
+<div class="gpi-desc">ClaudIA · ValerIA · Matías — primera línea N1</div>
 <div class="gpi-badge alta">🔴 Prioridad Alta</div>
 </div>
-<div class="gantt-cell-empty"></div><!-- May -->
-<div class="gantt-cell current-month"><!-- Jun -->
-<div class="gantt-bar alta" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
-</div>
-<div class="gantt-cell"><!-- Jul -->
-<div class="gantt-bar alta" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Ago -->
-<div class="gantt-bar alta" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Sep -->
-<div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
-</div>
-<div class="gantt-cell-empty"></div><!-- Oct -->
-<div class="gantt-cell-empty"></div><!-- Nov -->
-<div class="gantt-cell-empty"></div><!-- Dic -->
-<!-- ROW 2: Dashboard priorización — Jun a Jul — Media -->
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0 0 0 0;"><span class="gantt-bar-label">◀ en curso</span></div></div>
+<div class="gantt-cell current-month"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
 <div class="gantt-project-info">
-<div class="gpi-name"><span class="gpi-icon">📊</span> Dashboard de Priorización</div>
-<div class="gpi-desc">Dashboard de priorización de mejoras del servicio</div>
+<div class="gpi-name"><span class="gpi-icon">🧭</span>Rediseño del Centro de Ayuda</div>
+<div class="gpi-desc">help.trainingym.com — arquitectura y títulos</div>
+<div class="gpi-badge alta">🔴 Prioridad Alta</div>
+</div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0 0 0 0;"><span class="gantt-bar-label">◀ en curso</span></div></div>
+<div class="gantt-cell current-month"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-project-info">
+<div class="gpi-name"><span class="gpi-icon">📦</span>Logística 360</div>
+<div class="gpi-desc">Presupuestos de portes y memoria de almacén</div>
+<div class="gpi-badge alta">🔴 Prioridad Alta</div>
+</div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0 0 0 0;"><span class="gantt-bar-label">◀ en curso</span></div></div>
+<div class="gantt-cell current-month"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-project-info">
+<div class="gpi-name"><span class="gpi-icon">📖</span>Wiki de Soporte (Confluence)</div>
+<div class="gpi-desc">Documentación interna + detector diario</div>
 <div class="gpi-badge media">🟠 Prioridad Media</div>
 </div>
-<div class="gantt-cell-empty"></div><!-- May -->
-<div class="gantt-cell current-month"><!-- Jun -->
-<div class="gantt-bar media" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
-</div>
-<div class="gantt-cell"><!-- Jul -->
-<div class="gantt-bar media" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
-</div>
-<div class="gantt-cell-empty"></div><!-- Ago -->
-<div class="gantt-cell-empty"></div><!-- Sep -->
-<div class="gantt-cell-empty"></div><!-- Oct -->
-<div class="gantt-cell-empty"></div><!-- Nov -->
-<div class="gantt-cell-empty"></div><!-- Dic -->
-<!-- ROW 3: Automatización contenido Claude — May a Sep — Alta -->
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div></div>
+<div class="gantt-cell current-month"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0 0 0 0;"><span class="gantt-bar-label">sin fecha fin ▶</span></div></div>
 <div class="gantt-project-info">
-<div class="gpi-name"><span class="gpi-icon">✍️</span> Automatización Contenido (Claude)</div>
-<div class="gpi-desc">Generación automática de contenido en centro de ayuda con Claude Console</div>
-<div class="gpi-badge alta">🔴 Prioridad Alta</div>
+<div class="gpi-name"><span class="gpi-icon">🔍</span>Revisión de mejoras</div>
+<div class="gpi-desc">Duplicados, roadmap y propuesta de solución</div>
+<div class="gpi-badge media">🟠 Prioridad Media</div>
 </div>
-<div class="gantt-cell"><!-- May -->
-<div class="gantt-bar alta" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
-</div>
-<div class="gantt-cell current-month"><!-- Jun -->
-<div class="gantt-bar alta" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Jul -->
-<div class="gantt-bar alta" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Ago -->
-<div class="gantt-bar alta" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Sep -->
-<div class="gantt-bar alta" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
-</div>
-<div class="gantt-cell-empty"></div><!-- Oct -->
-<div class="gantt-cell-empty"></div><!-- Nov -->
-<div class="gantt-cell-empty"></div><!-- Dic -->
-<!-- ROW 4: Comunidad soporte — Jun a Dic — Media -->
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell current-month"><div class="gantt-bar media" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
 <div class="gantt-project-info">
-<div class="gpi-name"><span class="gpi-icon">👥</span> Comunidad de Soporte</div>
-<div class="gpi-desc">Diseño y validación de prototipos de comunidad de soporte</div>
+<div class="gpi-name"><span class="gpi-icon">📊</span>Dashboard CS multi-mes</div>
+<div class="gpi-desc">Plantilla única y actualización programada</div>
+<div class="gpi-badge media">🟠 Prioridad Media</div>
+</div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div></div>
+<div class="gantt-cell current-month"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-project-info">
+<div class="gpi-name"><span class="gpi-icon">🎓</span>Claude Academy</div>
+<div class="gpi-desc">Formación del equipo en IA aplicada</div>
+<div class="gpi-badge media">🟠 Prioridad Media</div>
+</div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell current-month"><div class="gantt-bar media" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar media" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-project-info">
+<div class="gpi-name"><span class="gpi-icon">👥</span>Comunidad de soporte</div>
+<div class="gpi-desc">Portal de autoservicio y roadmap público</div>
 <div class="gpi-badge baja">🔵 Prioridad Baja</div>
 </div>
-<div class="gantt-cell-empty"></div><!-- May -->
-<div class="gantt-cell current-month"><!-- Jun -->
-<div class="gantt-bar baja" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty current-month"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell"><div class="gantt-bar baja" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div></div>
+<div class="gantt-cell"><div class="gantt-bar baja" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar baja" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar baja" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-group">Habilidades de equipo</div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill current-month"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-group-fill"></div>
+<div class="gantt-project-info">
+<div class="gpi-name"><span class="gpi-icon">🧠</span>Agente Senior de CS Support</div>
+<div class="gpi-desc">Respuesta al cliente con evidencia real</div>
+<div class="gpi-badge hab">🟣 Habilidad de equipo</div>
 </div>
-<div class="gantt-cell"><!-- Jul -->
-<div class="gantt-bar baja" style="border-radius:0;"></div>
+<div class="gantt-cell"><div class="gantt-bar hab" style="border-radius:0 0 0 0;"><span class="gantt-bar-label">◀ en curso</span></div></div>
+<div class="gantt-cell current-month"><div class="gantt-bar hab" style="border-radius:0;"></div></div>
+<div class="gantt-cell"><div class="gantt-bar hab" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-project-info">
+<div class="gpi-name"><span class="gpi-icon">💬</span>Borradores IA en HubSpot</div>
+<div class="gpi-desc">Respuesta asistida a menciones internas</div>
+<div class="gpi-badge hab">🟣 Habilidad de equipo</div>
 </div>
-<div class="gantt-cell"><!-- Ago -->
-<div class="gantt-bar baja" style="border-radius:0;"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell current-month"><div class="gantt-bar hab" style="border-radius:6px 0 0 6px;"><span class="gantt-bar-label">Inicio</span></div></div>
+<div class="gantt-cell"><div class="gantt-bar hab" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
+<div class="gantt-cell-empty"></div>
 </div>
-<div class="gantt-cell"><!-- Sep -->
-<div class="gantt-bar baja" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Oct -->
-<div class="gantt-bar baja" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Nov -->
-<div class="gantt-bar baja" style="border-radius:0;"></div>
-</div>
-<div class="gantt-cell"><!-- Dic -->
-<div class="gantt-bar baja" style="border-radius:0 6px 6px 0;"><span class="gantt-bar-label">Fin</span></div>
-</div>
-</div><!-- end gantt-grid -->
-<!-- Legend -->
 <div class="gantt-legend">
-<div class="gl-item"><div class="gl-dot" style="background: rgb(211, 47, 47);"></div> Prioridad Alta</div>
-<div class="gl-item"><div class="gl-dot" style="background: none rgb(237, 104, 69);"></div> Prioridad Media</div>
-<div class="gl-item"><div class="gl-dot" style="background:#38bdf8;width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:5px;"></div><span>Prioridad Baja</span></div><div class="gl-today"><div class="gl-today-line"></div><span data-t="Mes actual ({mesAnio})"> Mes actual (Junio 2026)</span></div>
+<div class="gl-item"><span class="gl-dot alta"></span>Prioridad Alta</div>
+<div class="gl-item"><span class="gl-dot media"></span>Prioridad Media</div>
+<div class="gl-item"><span class="gl-dot baja"></span>Prioridad Baja</div>
+<div class="gl-item"><span class="gl-dot hab"></span>Habilidad de equipo</div>
+<div class="gl-today"><span class="gl-today-line"></span>Mes actual (octubre 2026)</div>
 </div>
-</div><div class="prox-cards">
-<!-- Card 1 -->
+</div>
+<div class="sec-title">Proyectos</div>
+<div class="prox-cards">
 <div class="prox-card alta">
 <div class="prox-card-header">
 <div class="prox-card-icon">🤖</div>
-<div class="prox-card-title">Nuevo Agente IA de Soporte (Matías)</div>
+<div class="prox-card-title">Agente IA de soporte (ClaudIA · ValerIA · Matías)</div>
 </div>
 <div class="prox-card-meta">
 <span class="pcm-badge alta">🔴 Prioridad Alta</span>
-<span class="pcm-period">📅 Mayo — Septiembre 2026</span>
+<span class="pcm-period">📅 En curso — Nov 2026</span>
 </div>
-<div class="prox-card-body">
-        Implementación de un nuevo agente de soporte basado en IA para mejorar la retención y automatización del canal IA. Objetivo: elevar la tasa de retención del 49,9% actual al objetivo del 80%.
-      </div>
+<div class="prox-card-body">Primera línea N1 en chat y WhatsApp. Es la palanca que mueve los KPIs del canal IA: objetivo llevar la retención del 52,3% actual al 80% y bajar el abandono por debajo del 5%.</div>
 <div class="prox-card-progress">
-<div class="pcpr-label"><span>Progreso estimado</span><span>25%</span></div>
-<div class="pcpr-bar"><div class="pcpr-fill alta" style="width:25%"></div></div>
+<div class="pcpr-label"><span>Avance estimado</span><span>35%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill alta" style="width:35%"></div></div>
 </div>
 </div>
-<!-- Card 2 -->
+<div class="prox-card alta">
+<div class="prox-card-header">
+<div class="prox-card-icon">🧭</div>
+<div class="prox-card-title">Rediseño del Centro de Ayuda</div>
+</div>
+<div class="prox-card-meta">
+<span class="pcm-badge alta">🔴 Prioridad Alta</span>
+<span class="pcm-period">📅 En curso — Feb 2027</span>
+</div>
+<div class="prox-card-body">Reorganización de los 318 artículos: nueva categoría «Ayuda y recursos», títulos orientados a tarea y reclasificación de los 57 artículos del pipeline Slack→KB. Menos tickets por autoservicio que no se encuentra.</div>
+<div class="prox-card-progress">
+<div class="pcpr-label"><span>Avance estimado</span><span>45%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill alta" style="width:45%"></div></div>
+</div>
+</div>
+<div class="prox-card alta">
+<div class="prox-card-header">
+<div class="prox-card-icon">📦</div>
+<div class="prox-card-title">Logística 360</div>
+</div>
+<div class="prox-card-meta">
+<span class="pcm-badge alta">🔴 Prioridad Alta</span>
+<span class="pcm-period">📅 En curso — Dic 2026</span>
+</div>
+<div class="prox-card-body">Presupuestos de portes en Slack apoyados en la memoria de conceptos del almacén: pesos, medidas y reglas de transportista por destino. Revisión técnica con Carlos Nadal.</div>
+<div class="prox-card-progress">
+<div class="pcpr-label"><span>Avance estimado</span><span>50%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill alta" style="width:50%"></div></div>
+</div>
+</div>
 <div class="prox-card media">
 <div class="prox-card-header">
-<div class="prox-card-icon">📊</div>
-<div class="prox-card-title">Dashboard de Priorización de Mejoras</div>
+<div class="prox-card-icon">📖</div>
+<div class="prox-card-title">Wiki de Soporte en Confluence (WST)</div>
 </div>
 <div class="prox-card-meta">
 <span class="pcm-badge media">🟠 Prioridad Media</span>
-<span class="pcm-period" data-t="📅 {mes} — Julio 2026">📅 Junio — Julio 2026</span>
+<span class="pcm-period">📅 Desde sep 2026 — sin fecha fin</span>
 </div>
-<div class="prox-card-body">
-        Desarrollo de un dashboard de priorización de mejoras del servicio CS, para identificar y ordenar las acciones de mejora con mayor impacto en los KPIs.
-      </div>
+<div class="prox-card-body">Fichas cortas y tutoriales formativos para el equipo, con un detector diario que propone y redacta los borradores desde Slack y Jira. Proyecto continuado: no tiene fecha de cierre.</div>
 <div class="prox-card-progress">
-<div class="pcpr-label"><span>Progreso estimado</span><span>10%</span></div>
-<div class="pcpr-bar"><div class="pcpr-fill media" style="width:10%"></div></div>
+<div class="pcpr-label"><span>Avance estimado</span><span>60%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill media" style="width:60%"></div></div>
 </div>
 </div>
-<!-- Card 3 -->
-<div class="prox-card alta">
+<div class="prox-card media">
 <div class="prox-card-header">
-<div class="prox-card-icon">✍️</div>
-<div class="prox-card-title">Automatización de Contenido con Claude Console</div>
+<div class="prox-card-icon">🔍</div>
+<div class="prox-card-title">Revisión automática de mejoras</div>
 </div>
 <div class="prox-card-meta">
-<span class="pcm-badge alta">🔴 Prioridad Alta</span>
-<span class="pcm-period">📅 Mayo — Septiembre 2026</span>
+<span class="pcm-badge media">🟠 Prioridad Media</span>
+<span class="pcm-period">📅 Oct — Dic 2026</span>
 </div>
-<div class="prox-card-body">
-        Automatización de la generación de contenido en el centro de ayuda utilizando Claude Console. Permite escalar la producción de FAQs, guías y respuestas tipo sin intervención manual.
-      </div>
+<div class="prox-card-body">Análisis de los tickets en fase Recibida: duplicados en HubSpot y Jira, encaje con el roadmap de producto y propuesta de solución. Nota interna en el ticket y aviso en Slack, siempre previa aprobación.</div>
 <div class="prox-card-progress">
-<div class="pcpr-label"><span>Progreso estimado</span><span>40%</span></div>
-<div class="pcpr-bar"><div class="pcpr-fill alta" style="width:40%"></div></div>
+<div class="pcpr-label"><span>Avance estimado</span><span>30%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill media" style="width:30%"></div></div>
 </div>
 </div>
-<!-- Card 4 -->
+<div class="prox-card media">
+<div class="prox-card-header">
+<div class="prox-card-icon">📊</div>
+<div class="prox-card-title">Dashboard CS multi-mes</div>
+</div>
+<div class="prox-card-meta">
+<span class="pcm-badge media">🟠 Prioridad Media</span>
+<span class="pcm-period">📅 Sep — Nov 2026</span>
+</div>
+<div class="prox-card-body">Este mismo dashboard: una plantilla con selector de mes y una tarea que el día 1 añade el mes cerrado. Pendiente el conector que permitiría ejecutarla sin depender del equipo local.</div>
+<div class="prox-card-progress">
+<div class="pcpr-label"><span>Avance estimado</span><span>85%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill media" style="width:85%"></div></div>
+</div>
+</div>
+<div class="prox-card media">
+<div class="prox-card-header">
+<div class="prox-card-icon">🎓</div>
+<div class="prox-card-title">Claude Academy — formación del equipo</div>
+</div>
+<div class="prox-card-meta">
+<span class="pcm-badge media">🟠 Prioridad Media</span>
+<span class="pcm-period">📅 Oct 2026 — Mar 2027</span>
+</div>
+<div class="prox-card-body">Curso «Fundamentos de la Ruta Express» y la sesión «Claude para el equipo». El objetivo es que resolver con IA deje de depender de una sola persona del departamento.</div>
+<div class="prox-card-progress">
+<div class="pcpr-label"><span>Avance estimado</span><span>40%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill media" style="width:40%"></div></div>
+</div>
+</div>
 <div class="prox-card baja">
 <div class="prox-card-header">
 <div class="prox-card-icon">👥</div>
-<div class="prox-card-title">Prototipos de Comunidad de Soporte</div>
+<div class="prox-card-title">Portal de comunidad de soporte</div>
 </div>
 <div class="prox-card-meta">
 <span class="pcm-badge baja">🔵 Prioridad Baja</span>
-<span class="pcm-period" data-t="📅 {mes} — Diciembre 2026">📅 Junio — Diciembre 2026</span>
+<span class="pcm-period">📅 Ene — Abr 2027</span>
 </div>
-<div class="prox-card-body">
-        Diseño y validación de prototipos de una comunidad de soporte. Exploración de modelos de autoservicio y comunidad que complementen los canales de IA y agente humano.
-      </div>
+<div class="prox-card-body">Prototipo de portal con foro de dudas, changelog, tutoriales y roadmap público. Explora el autoservicio como tercer canal junto a la IA y el agente humano.</div>
 <div class="prox-card-progress">
-<div class="pcpr-label"><span>Progreso estimado</span><span>5%</span></div>
-<div class="pcpr-bar"><div class="pcpr-fill baja" style="width:5%"></div></div>
+<div class="pcpr-label"><span>Avance estimado</span><span>10%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill baja" style="width:10%"></div></div>
 </div>
 </div>
-</div></div>
-<!-- PROJECT CARDS -->
 </div>
-</div></div><!-- end content -->
+<div class="sec-title">Habilidades de equipo</div>
+<div class="prox-cards">
+<div class="prox-card hab">
+<div class="prox-card-header">
+<div class="prox-card-icon">🧠</div>
+<div class="prox-card-title">Agente Senior de Customer Success Support</div>
+</div>
+<div class="prox-card-meta">
+<span class="pcm-badge hab">🟣 Habilidad de equipo</span>
+<span class="pcm-period">📅 En curso — Nov 2026</span>
+</div>
+<div class="prox-card-body">Responde al cliente con precedentes reales de HubSpot y el estado comprobado del sistema, en vez de conocimiento genérico de producto. Es la base sobre la que se apoyan el resto de automatizaciones de respuesta.</div>
+<div class="prox-card-progress">
+<div class="pcpr-label"><span>Avance estimado</span><span>70%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill hab" style="width:70%"></div></div>
+</div>
+</div>
+<div class="prox-card hab">
+<div class="prox-card-header">
+<div class="prox-card-icon">💬</div>
+<div class="prox-card-title">Borradores IA de menciones en HubSpot</div>
+</div>
+<div class="prox-card-meta">
+<span class="pcm-badge hab">🟣 Habilidad de equipo</span>
+<span class="pcm-period">📅 Oct — Nov 2026</span>
+</div>
+<div class="prox-card-body">Revisión horaria de las menciones del equipo con entrega del borrador en Slack, apoyada en el Agente Senior. Acorta la respuesta interna sin escribir nunca en HubSpot.</div>
+<div class="prox-card-progress">
+<div class="pcpr-label"><span>Avance estimado</span><span>80%</span></div>
+<div class="pcpr-bar"><div class="pcpr-fill hab" style="width:80%"></div></div>
+</div>
+</div>
+</div>
+</div></div></div><!-- end content -->
 </div><!-- end main -->
 <script>
 const NAR='#ED6845', GRN='#3ecf8e', YEL='#f5c842', RED='#f05252', BLU='#5b7fa6', MUT='#4a5a6a';
